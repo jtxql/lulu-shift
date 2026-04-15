@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="description" content="高颜值月度排班表 PWA 应用">
+  <title>月度排班表</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/calendar.css">
+  <link rel="stylesheet" href="styles/dark.css">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <h1 class="app-title">LULU的月度排班表</h1>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" id="btn-export" title="打印/导出">
+        <i data-lucide="printer"></i>
+      </button>
+      <button class="icon-btn" id="btn-dark-mode" title="深色模式">
+        <i data-lucide="moon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Calendar -->
+  <main class="calendar-container">
+    <!-- Month Navigation -->
+    <div class="month-nav">
+      <button class="nav-btn" id="btn-prev-month">
+        <i data-lucide="chevron-left"></i>
+      </button>
+      <h2 class="month-title" id="month-title">2026年4月</h2>
+      <button class="nav-btn" id="btn-next-month">
+        <i data-lucide="chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Weekday Headers -->
+    <div class="weekday-header">
+      <span class="weekday">周一</span>
+      <span class="weekday">周二</span>
+      <span class="weekday">周三</span>
+      <span class="weekday">周四</span>
+      <span class="weekday">周五</span>
+      <span class="weekday weekend">周六</span>
+      <span class="weekday weekend">周日</span>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-grid" id="calendar-grid"></div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-day)"></span>白班</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-night)"></span>夜班</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-rest)"></span>休息</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-personal)"></span>事假</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-sick)"></span>病假</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-annual)"></span>年假</span>
+    </div>
+  </main>
+
+  <!-- Status Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="status-modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-date">4月15日</h3>
+        <button class="modal-close" id="modal-close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="status-options" id="status-options">
+          <button class="status-btn" data-status="day">
+            <span class="status-dot" style="background: var(--color-day)"></span>
+            白班
+          </button>
+          <button class="status-btn" data-status="night">
+            <span class="status-dot" style="background: var(--color-night)"></span>
+            夜班
+          </button>
+          <button class="status-btn" data-status="rest">
+            <span class="status-dot" style="background: var(--color-rest)"></span>
+            休息
+          </button>
+          <button class="status-btn" data-status="personal">
+            <span class="status-dot" style="background: var(--color-personal)"></span>
+            事假
+          </button>
+          <button class="status-btn" data-status="sick">
+            <span class="status-dot" style="background: var(--color-sick)"></span>
+            病假
+          </button>
+          <button class="status-btn" data-status="annual">
+            <span class="status-dot" style="background: var(--color-annual)"></span>
+            年假
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" id="btn-delete">
+          <i data-lucide="trash-2"></i>
+          删除
+        </button>
+        <button class="btn btn-primary" id="btn-save">
+          <i data-lucide="save"></i>
+          保存
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span class="toast-message" id="toast-message">保存成功</span>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay" style="display: none;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="scripts/pwa.js"></script>
+  <script src="scripts/dark-mode.js"></script>
+  <script src="scripts/gist.js"></script>
+  <script src="scripts/calendar.js"></script>
+  <script src="scripts/export.js"></script>
+  <script src="scripts/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+/* ===== Dark Mode ===== */
+body.dark-mode {
+  /* Base Colors */
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --bg-card: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border-color: #374151;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-float: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Dark Mode - Header ===== */
+body.dark-mode .app-header {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+body.dark-mode .app-title {
+  color: var(--text-primary);
+}
+
+body.dark-mode .icon-btn {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+body.dark-mode .icon-btn:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* ===== Dark Mode - Calendar ===== */
+body.dark-mode .calendar-grid {
+  background: var(--bg-primary);
+}
+
+body.dark-mode .day-cell {
+  background: var(--bg-secondary);
+}
+
+body.dark-mode .day-cell.empty {
+  background: var(--bg-secondary);
+}
+
+body.dark-mode .day-number {
+  color: var(--text-primary);
+}
+
+body.dark-mode .day-cell.empty .day-number {
+  color: var(--text-muted);
+}
+
+body.dark-mode .day-cell.adjacent-month .day-number {
+  color: var(--text-muted);
+}
+
+body.dark-mode .day-cell.adjacent-month {
+  background: var(--bg-secondary);
+}
+
+body.dark-mode .day-cell.has-status.day {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+body.dark-mode .day-cell.has-status.night {
+  background: rgba(249, 115, 22, 0.2);
+}
+
+body.dark-mode .day-cell.has-status.rest {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+body.dark-mode .day-cell.has-status.personal {
+  background: rgba(6, 182, 212, 0.2);
+}
+
+body.dark-mode .day-cell.has-status.sick {
+  background: rgba(236, 72, 153, 0.2);
+}
+
+body.dark-mode .day-cell.has-status.annual {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+/* ===== Dark Mode - Weekday ===== */
+body.dark-mode .weekday {
+  color: var(--text-secondary);
+}
+
+body.dark-mode .weekday.weekend {
+  color: var(--color-sick);
+}
+
+/* ===== Dark Mode - Legend ===== */
+body.dark-mode .legend {
+  background: var(--bg-primary);
+}
+
+body.dark-mode .legend-item {
+  color: var(--text-secondary);
+}
+
+/* ===== Dark Mode - Modal ===== */
+body.dark-mode .modal {
+  background: var(--bg-primary);
+}
+
+body.dark-mode .modal-header {
+  border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .modal-title {
+  color: var(--text-primary);
+}
+
+body.dark-mode .modal-close {
+  color: var(--text-secondary);
+}
+
+body.dark-mode .modal-close:hover {
+  background: var(--bg-secondary);
+}
+
+body.dark-mode .modal-footer {
+  border-top-color: var(--border-color);
+}
+
+body.dark-mode .form-group label {
+  color: var(--text-primary);
+}
+
+body.dark-mode .form-group input {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-mode .form-group input:focus {
+  border-color: var(--color-day);
+}
+
+/* ===== Dark Mode - Buttons ===== */
+body.dark-mode .btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+body.dark-mode .btn-secondary:hover {
+  background: var(--border-color);
+}
+
+body.dark-mode .btn-danger {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+}
+
+body.dark-mode .btn-danger:hover {
+  background: rgba(220, 38, 38, 0.3);
+}
+
+/* ===== Dark Mode - Status Buttons ===== */
+body.dark-mode .status-btn {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+body.dark-mode .status-btn:hover {
+  border-color: var(--text-secondary);
+}
+
+body.dark-mode .status-btn.selected {
+  background: var(--bg-primary);
+}
+
+/* ===== Dark Mode - Toast ===== */
+body.dark-mode .toast {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+/* ===== Dark Mode - Scrollbar ===== */
+body.dark-mode ::-webkit-scrollbar {
+  width: 8px;
+}
+
+body.dark-mode ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ===== Dark Mode - Today indicator ===== */
+body.dark-mode .day-cell.today {
+  border-color: var(--color-day);
+}
+
+/* ===== Dark Mode - Nav Button ===== */
+body.dark-mode .nav-btn {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+body.dark-mode .nav-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* ===== Dark Mode - Form Hint ===== */
+body.dark-mode .form-hint {
+  color: var(--text-muted);
+}
+
+/* ===== Dark Mode - Month Title ===== */
+body.dark-mode .month-title {
+  color: var(--text-primary);
+}

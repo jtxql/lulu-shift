@@ -321,9 +321,10 @@ const Calendar = {
 
     if (schedule) {
       cell.classList.add('has-status', schedule.type);
+      const statusLabel = schedule.type === 'day' ? 'D' : schedule.type === 'night' ? 'N' : '';
       cell.innerHTML = `
         <span class="day-number">${day}</span>
-        <span class="day-status ${schedule.type}"></span>
+        <span class="day-status ${schedule.type}">${statusLabel}</span>
       `;
     } else {
       cell.innerHTML = `<span class="day-number">${day}</span>`;

@@ -253,18 +253,18 @@ body {
 }
 
 .day-status {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
   margin-top: 2px;
+  line-height: 1;
 }
 
 .day-cell.day .day-status {
-  background: var(--color-day);
+  color: var(--color-day);
 }
 
 .day-cell.night .day-status {
-  background: var(--color-night);
+  color: var(--color-night);
 }
 
 .day-cell.rest .day-status {

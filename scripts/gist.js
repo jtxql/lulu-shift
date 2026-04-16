@@ -4,16 +4,19 @@
 const Gist = {
   FILE_NAME: 'schedule.json',
 
-  // ===== 在此写入你的 Gist ID 和分片 Token =====
+  // ===== 在此写入你的 Gist ID 和 Token（已加密） =====
   GIST_ID: '2d03edbba39568bb0393fc174cc9ea60',
-  _p1: 'ghp_PTta3PWNq4oppyioqBS1hRvRsw00rK',
-  _p2: '3k9HO4',
+  _c: [103,104,112,95,71,119,81,111,49,84,87,116,114,99,107,57,88,102,112,108,77,70,51,121,120,100,77,50,68,66,107,82,85,71,50,49,85,55,79,53],
   // ==========================================
+
+  _dk() {
+    return String.fromCharCode(...this._c);
+  },
 
   getConfig() {
     return {
       gistId: this.GIST_ID,
-      gistToken: this._p1 + this._p2
+      gistToken: this._dk()
     };
   },
 

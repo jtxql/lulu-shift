@@ -160,20 +160,22 @@ const Calendar = {
       }
     } else if (type === 'night') {
       // 夜班
-      if (currentMinutes >= nightStart || currentMinutes < nightEnd) {
-        // 正在上夜班
-        let remaining;
-        if (currentMinutes >= nightStart) {
-          remaining = (24 * 60 - currentMinutes) + nightEnd;
-        } else {
-          remaining = nightEnd - currentMinutes;
-        }
+      if (currentMinutes >= nightStart) {
+        // 19:30 ~ 23:59 正在上夜班
+        const remaining = 24 * 60 - currentMinutes + nightEnd;
+        const rh = Math.floor(remaining / 60);
+        const rm = remaining % 60;
+        shiftEl.textContent = `你现在正在上夜班，还有 ${rh}小时${rm}分钟下班`;
+        shiftEl.className = 'status-shift working';
+      } else if (currentMinutes < nightEnd) {
+        // 00:00 ~ 07:30 正在上夜班（跨午夜延续）
+        const remaining = nightEnd - currentMinutes;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;
         shiftEl.textContent = `你现在正在上夜班，还有 ${rh}小时${rm}分钟下班`;
         shiftEl.className = 'status-shift working';
       } else {
-        // 夜班还没开始
+        // 07:30 ~ 19:30 夜班还没开始
         const remaining = nightStart - currentMinutes;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;

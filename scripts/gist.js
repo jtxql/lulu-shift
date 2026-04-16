@@ -6,7 +6,7 @@ const Gist = {
 
   // ===== 在此写入你的 Gist ID 和 Token =====
   GIST_ID: '2d03edbba39568bb0393fc174cc9ea60',
-  GIST_TOKEN: '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',
+  GIST_TOKEN: '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',
   // ==========================================
 
   getConfig() {

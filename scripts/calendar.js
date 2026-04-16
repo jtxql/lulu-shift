@@ -389,6 +389,17 @@ const Calendar = {
     // Display current time
     timeEl.textContent = Language.formatTime(hours, minutes);
 
+    // Display version from manifest
+    const versionEl = document.getElementById('status-version');
+    if (versionEl && !versionEl.textContent) {
+      fetch('manifest.json')
+        .then(r => r.json())
+        .then(data => {
+          versionEl.textContent = 'v' + data.version;
+        })
+        .catch(() => {});
+    }
+
     // Find today's schedule
     const todayStr = `${year}-${String(month).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
     const todaySchedule = this.schedules.find(s => s.date === todayStr);

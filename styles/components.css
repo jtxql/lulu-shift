@@ -288,6 +288,13 @@
   color: var(--color-rest);
 }
 
+.status-version {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+  opacity: 0.6;
+}
+
 @media (max-width: 640px) {
   .status-bar {
     padding: var(--space-sm) var(--space-md);
@@ -299,5 +306,9 @@
 
   .status-shift {
     font-size: 0.875rem;
+  }
+
+  .status-version {
+    font-size: 0.65rem;
   }
 }

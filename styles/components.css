@@ -210,7 +210,8 @@
   .modal-overlay,
   .toast,
   .loading-overlay,
-  .legend {
+  .legend,
+  .status-bar {
     display: none !important;
   }
 
@@ -251,5 +252,52 @@
 
   .weekday.weekend {
     color: #dc2626;
+  }
+}
+
+/* ===== Status Bar ===== */
+.status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-md) var(--space-lg);
+  text-align: center;
+  z-index: 50;
+}
+
+.status-time {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.status-shift {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.status-shift.working {
+  color: var(--color-day);
+}
+
+.status-shift.resting {
+  color: var(--color-rest);
+}
+
+@media (max-width: 640px) {
+  .status-bar {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .status-time {
+    font-size: 0.75rem;
+  }
+
+  .status-shift {
+    font-size: 0.875rem;
   }
 }

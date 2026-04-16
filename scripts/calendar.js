@@ -190,7 +190,14 @@ const Calendar = {
       return;
     }
 
-    // Short press - open single date modal
+    // Drag selection (multiple dates) → show summary
+    if (this._selectedDates.size > 1) {
+      this._showSummary();
+      this._clearSelectionUI();
+      return;
+    }
+
+    // Single date short press → open modal
     this._clearSelectionUI();
     if (this._selectionStart) {
       const dateStr = this._selectionStart;

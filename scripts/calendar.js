@@ -109,14 +109,22 @@ const Calendar = {
     this.grid.addEventListener('mousemove', (e) => this._updateSelection(e));
     document.addEventListener('mouseup', (e) => this._endSelection(e));
 
-    // Touch events
-    this.grid.addEventListener('touchstart', (e) => this._startSelection(e), { passive: true });
-    this.grid.addEventListener('touchmove', (e) => this._updateSelection(e), { passive: true });
+    // Touch events - need passive: false to prevent scroll during drag
+    this.grid.addEventListener('touchstart', (e) => this._startSelection(e), { passive: false });
+    this.grid.addEventListener('touchmove', (e) => this._updateSelection(e), { passive: false });
     document.addEventListener('touchend', (e) => this._endSelection(e));
+    document.addEventListener('touchcancel', (e) => this._endSelection(e));
   },
 
   _getCellFromEvent(e) {
-    const target = e.target.closest('.day-cell');
+    // For touch events, use touches[0] to get the current touch point
+    let target;
+    if (e.touches && e.touches.length > 0) {
+      target = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    } else {
+      target = e.target;
+    }
+    target = target ? target.closest('.day-cell') : null;
     if (!target) return null;
     return {
       dateStr: target.dataset.date,
@@ -125,6 +133,9 @@ const Calendar = {
   },
 
   _startSelection(e) {
+    // Prevent default to stop scrolling/zooming on touch devices
+    if (e.touches) e.preventDefault();
+
     const cell = this._getCellFromEvent(e);
     if (!cell) return;
 
@@ -154,6 +165,9 @@ const Calendar = {
 
   _updateSelection(e) {
     if (!this._isSelecting) return;
+
+    // Prevent default to stop scrolling while dragging on touch devices
+    if (e.touches) e.preventDefault();
 
     // Cancel long press timer on any movement
     if (this._selectionTimer) {

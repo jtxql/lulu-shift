@@ -1,7 +1,7 @@
 {
-  "name": "月度排班表",
-  "short_name": "排班表",
-  "description": "高颜值的手机可用月度排班表 PWA 应用",
+  "name": "Monthly Schedule",
+  "short_name": "Schedule",
+  "description": "A beautiful mobile-friendly monthly schedule PWA app",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

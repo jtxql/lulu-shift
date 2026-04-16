@@ -3,10 +3,10 @@
  */
 const Calendar = {
   // Ottawa timezone (America/Toronto)
-  _ottawaOffset: -5, // 渥太华标准时区偏移
+  _ottawaOffset: -5, // Ottawa standard timezone offset
 
   _getOttawaDate() {
-    // 获取渥太华时区的当前日期
+    // Get current date in Ottawa timezone
     const now = new Date();
     const ottawaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
     return ottawaTime;
@@ -44,7 +44,7 @@ const Calendar = {
     this.modalDate = document.getElementById('modal-date');
     this.statusOptions = document.getElementById('status-options');
 
-    // 使用渥太华时间初始化
+    // Initialize with Ottawa time
     const ottawa = this._getOttawaDateParts();
     this.currentYear = ottawa.year;
     this.currentMonth = ottawa.month;
@@ -95,7 +95,7 @@ const Calendar = {
     this.schedules = schedules || [];
     this.render();
     this._updateStatusBar();
-    // 每分钟更新一次状态栏
+    // Update status bar every minute
     if (!this._statusTimer) {
       this._statusTimer = setInterval(() => this._updateStatusBar(), 60000);
     }
@@ -113,89 +113,89 @@ const Calendar = {
     const hours = now.getHours();
     const minutes = now.getMinutes();
 
-    // 显示当前时间
-    timeEl.textContent = `现在是渥太华时间 ${month}月${date}日 ${hours}点${minutes}分`;
+    // Display current time
+    timeEl.textContent = Language.formatTime(hours, minutes);
 
-    // 查找今天的排班
+    // Find today's schedule
     const todayStr = `${year}-${String(month).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
     const todaySchedule = this.schedules.find(s => s.date === todayStr);
 
     if (!todaySchedule) {
-      shiftEl.textContent = '今日无排班记录';
+      shiftEl.textContent = Language.t('status.noSchedule');
       shiftEl.className = 'status-shift';
       return;
     }
 
     const type = todaySchedule.type;
 
-    // 白班: 7:30 ~ 19:30
-    // 夜班: 19:30 ~ 次日 7:30
-    const dayStart = 7 * 60 + 30;  // 7:30 = 450分钟
-    const dayEnd = 19 * 60 + 30;   // 19:30 = 1170分钟
-    const nightStart = 19 * 60 + 30; // 19:30 = 1170分钟
-    const nightEnd = 7 * 60 + 30;   // 次日 7:30 = 450分钟
+    // Day shift: 7:30 ~ 19:30
+    // Night shift: 19:30 ~ next day 7:30
+    const dayStart = 7 * 60 + 30;  // 7:30 = 450 minutes
+    const dayEnd = 19 * 60 + 30;   // 19:30 = 1170 minutes
+    const nightStart = 19 * 60 + 30; // 19:30 = 1170 minutes
+    const nightEnd = 7 * 60 + 30;   // Next day 7:30 = 450 minutes
 
     const currentMinutes = hours * 60 + minutes;
 
     if (type === 'day') {
-      // 白班
+      // Day shift
       if (currentMinutes >= dayStart && currentMinutes < dayEnd) {
-        // 正在上班
+        // Currently on shift
         const remaining = dayEnd - currentMinutes;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;
-        shiftEl.textContent = `你现在正在上班，还有 ${rh}小时${rm}分钟下班`;
+        shiftEl.textContent = Language.formatShiftStatus(Language.t('status.onShift'), { h: rh, m: rm });
         shiftEl.className = 'status-shift working';
       } else if (currentMinutes < dayStart) {
-        // 白班还没开始
+        // Day shift not started yet
         const remaining = dayStart - currentMinutes;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;
-        shiftEl.textContent = `白班还没开始，还有 ${rh}小时${rm}分钟上班`;
+        shiftEl.textContent = Language.formatShiftStatus(Language.t('status.dayShiftNotStarted'), { h: rh, m: rm });
         shiftEl.className = 'status-shift resting';
       } else {
-        // 白班已结束
-        shiftEl.textContent = '白班已结束';
+        // Day shift ended
+        shiftEl.textContent = Language.t('status.dayShiftEnded');
         shiftEl.className = 'status-shift';
       }
     } else if (type === 'night') {
-      // 夜班
+      // Night shift
       if (currentMinutes >= nightStart) {
-        // 19:30 ~ 23:59 正在上夜班
+        // 19:30 ~ 23:59 on night shift
         const remaining = 24 * 60 - currentMinutes + nightEnd;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;
-        shiftEl.textContent = `你现在正在上夜班，还有 ${rh}小时${rm}分钟下班`;
+        shiftEl.textContent = Language.formatShiftStatus(Language.t('status.onShift'), { h: rh, m: rm });
         shiftEl.className = 'status-shift working';
       } else if (currentMinutes < nightEnd) {
-        // 00:00 ~ 07:30 正在上夜班（跨午夜延续）
+        // 00:00 ~ 07:30 on night shift (spans midnight)
         const remaining = nightEnd - currentMinutes;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;
-        shiftEl.textContent = `你现在正在上夜班，还有 ${rh}小时${rm}分钟下班`;
+        shiftEl.textContent = Language.formatShiftStatus(Language.t('status.onShift'), { h: rh, m: rm });
         shiftEl.className = 'status-shift working';
       } else {
-        // 07:30 ~ 19:30 夜班还没开始
+        // 07:30 ~ 19:30 night shift not started
         const remaining = nightStart - currentMinutes;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;
-        shiftEl.textContent = `夜班还没开始，还有 ${rh}小时${rm}分钟上班`;
+        shiftEl.textContent = Language.formatShiftStatus(Language.t('status.nightShiftNotStarted'), { h: rh, m: rm });
         shiftEl.className = 'status-shift resting';
       }
     } else if (type === 'rest') {
-      // 休息日 - 查找下一个工作日
+      // Rest day - find next work day
       const { days, hours: nh, minutes: nm } = this._getNextWorkStart(now, todayStr);
-      shiftEl.textContent = `你现在处于休息时间，还有 ${days}天${nh}小时${nm}分钟上班`;
+      shiftEl.textContent = Language.formatShiftStatus(Language.t('status.restDay'), { d: days, h: nh, m: nm });
       shiftEl.className = 'status-shift resting';
     } else {
-      // 事假、病假、年假等
-      shiftEl.textContent = `今日排班：${todaySchedule.text}`;
+      // Personal leave, sick leave, annual leave, etc.
+      shiftEl.textContent = Language.t('status.scheduleLabel') + Language.t('legend.' + type);
       shiftEl.className = 'status-shift';
     }
   },
 
   _getNextWorkStart(now, todayStr) {
-    // 从排班表中找到下一个工作日
+    // Find the next work day from the schedule
     const nowMs = now.getTime();
     let minDiff = Infinity;
     let nextSchedule = null;
@@ -203,12 +203,12 @@ const Calendar = {
     for (const s of this.schedules) {
       if (s.type === 'day' || s.type === 'night') {
         const [y, m, d] = s.date.split('-').map(Number);
-        // 白班工作开始时间
+        // Day shift work start time
         let workStart;
         if (s.type === 'day') {
           workStart = new Date(y, m - 1, d, 7, 30).getTime();
         } else {
-          // 夜班开始时间是当天19:30
+          // Night shift starts at 19:30 on the same day
           workStart = new Date(y, m - 1, d, 19, 30).getTime();
         }
         const diff = workStart - nowMs;
@@ -237,11 +237,7 @@ const Calendar = {
   },
 
   updateTitle() {
-    const monthNames = [
-      '1月', '2月', '3月', '4月', '5月', '6月',
-      '7月', '8月', '9月', '10月', '11月', '12月'
-    ];
-    this.titleEl.textContent = `${this.currentYear}年${monthNames[this.currentMonth - 1]}`;
+    Language.updateTitle();
   },
 
   renderGrid() {
@@ -341,7 +337,7 @@ const Calendar = {
 
     // Parse date for display
     const [, month, day] = dateStr.split('-');
-    this.modalDate.textContent = `${parseInt(month)}月${parseInt(day)}日`;
+    this.modalDate.textContent = `${month}/${day}`;
 
     // Set current status
     this.selectedStatus = schedule ? schedule.type : null;
@@ -371,17 +367,17 @@ const Calendar = {
 
   async saveStatus() {
     if (!this.selectedDate || !this.selectedStatus) {
-      App.showToast('请选择班次状态');
+      App.showToast(Language.t('modal.pleaseSelect'));
       return;
     }
 
     const statusText = {
-      day: '白班',
-      night: '夜班',
-      rest: '休息',
-      personal: '事假',
-      sick: '病假',
-      annual: '年假'
+      day: 'Day Shift',
+      night: 'Night Shift',
+      rest: 'Day Off',
+      personal: 'Personal Leave',
+      sick: 'Sick Leave',
+      annual: 'Annual Leave'
     };
 
     // Remove existing schedule for this date
@@ -399,7 +395,7 @@ const Calendar = {
     const success = await Gist.save(this.schedules);
     App.showLoading(false);
     if (success) {
-      App.showToast('保存成功');
+      App.showToast(Language.t('toast.saved'));
       this.closeModal();
       this.render();
     }
@@ -416,7 +412,7 @@ const Calendar = {
     const success = await Gist.save(this.schedules);
     App.showLoading(false);
     if (success) {
-      App.showToast('已删除');
+      App.showToast('Deleted');
       this.closeModal();
       this.render();
     }

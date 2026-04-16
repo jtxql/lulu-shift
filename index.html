@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#3b82f6">
-  <meta name="description" content="高颜值月度排班表 PWA 应用">
-  <title>月度排班表</title>
+  <meta name="description" content="Beautiful monthly schedule PWA app">
+  <title>Monthly Schedule</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
@@ -24,13 +24,16 @@
   <!-- Header -->
   <header class="app-header">
     <div class="header-left">
-      <h1 class="app-title">LULU的月度排班表</h1>
+      <h1 class="app-title">LULU's Monthly Schedule</h1>
     </div>
     <div class="header-right">
-      <button class="icon-btn" id="btn-export" title="打印/导出">
+      <button class="icon-btn" id="btn-export" title="Print / Export">
         <i data-lucide="printer"></i>
       </button>
-      <button class="icon-btn" id="btn-dark-mode" title="深色模式">
+      <button class="icon-btn" id="btn-lang" title="Toggle Language">
+        <i data-lucide="languages"></i>
+      </button>
+      <button class="icon-btn" id="btn-dark-mode" title="Dark Mode">
         <i data-lucide="moon"></i>
       </button>
     </div>
@@ -43,7 +46,7 @@
       <button class="nav-btn" id="btn-prev-month">
         <i data-lucide="chevron-left"></i>
       </button>
-      <h2 class="month-title" id="month-title">2026年4月</h2>
+      <h2 class="month-title" id="month-title">April 2026</h2>
       <button class="nav-btn" id="btn-next-month">
         <i data-lucide="chevron-right"></i>
       </button>
@@ -51,13 +54,13 @@
 
     <!-- Weekday Headers -->
     <div class="weekday-header">
-      <span class="weekday">周一</span>
-      <span class="weekday">周二</span>
-      <span class="weekday">周三</span>
-      <span class="weekday">周四</span>
-      <span class="weekday">周五</span>
-      <span class="weekday weekend">周六</span>
-      <span class="weekday weekend">周日</span>
+      <span class="weekday">Mon</span>
+      <span class="weekday">Tue</span>
+      <span class="weekday">Wed</span>
+      <span class="weekday">Thu</span>
+      <span class="weekday">Fri</span>
+      <span class="weekday weekend">Sat</span>
+      <span class="weekday weekend">Sun</span>
     </div>
 
     <!-- Calendar Grid -->
@@ -65,12 +68,12 @@
 
     <!-- Legend -->
     <div class="legend">
-      <span class="legend-item"><span class="legend-dot" style="background: var(--color-day)"></span>白班</span>
-      <span class="legend-item"><span class="legend-dot" style="background: var(--color-night)"></span>夜班</span>
-      <span class="legend-item"><span class="legend-dot" style="background: var(--color-rest)"></span>休息</span>
-      <span class="legend-item"><span class="legend-dot" style="background: var(--color-personal)"></span>事假</span>
-      <span class="legend-item"><span class="legend-dot" style="background: var(--color-sick)"></span>病假</span>
-      <span class="legend-item"><span class="legend-dot" style="background: var(--color-annual)"></span>年假</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-day)"></span>Day Shift</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-night)"></span>Night Shift</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-rest)"></span>Day Off</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-personal)"></span>Personal Leave</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-sick)"></span>Sick Leave</span>
+      <span class="legend-item"><span class="legend-dot" style="background: var(--color-annual)"></span>Annual Leave</span>
     </div>
   </main>
 
@@ -84,7 +87,7 @@
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal" id="status-modal">
       <div class="modal-header">
-        <h3 class="modal-title" id="modal-date">4月15日</h3>
+        <h3 class="modal-title" id="modal-date">April 15</h3>
         <button class="modal-close" id="modal-close">
           <i data-lucide="x"></i>
         </button>
@@ -93,38 +96,38 @@
         <div class="status-options" id="status-options">
           <button class="status-btn" data-status="day">
             <span class="status-dot" style="background: var(--color-day)"></span>
-            白班
+            Day Shift
           </button>
           <button class="status-btn" data-status="night">
             <span class="status-dot" style="background: var(--color-night)"></span>
-            夜班
+            Night Shift
           </button>
           <button class="status-btn" data-status="rest">
             <span class="status-dot" style="background: var(--color-rest)"></span>
-            休息
+            Day Off
           </button>
           <button class="status-btn" data-status="personal">
             <span class="status-dot" style="background: var(--color-personal)"></span>
-            事假
+            Personal Leave
           </button>
           <button class="status-btn" data-status="sick">
             <span class="status-dot" style="background: var(--color-sick)"></span>
-            病假
+            Sick Leave
           </button>
           <button class="status-btn" data-status="annual">
             <span class="status-dot" style="background: var(--color-annual)"></span>
-            年假
+            Annual Leave
           </button>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger" id="btn-delete">
           <i data-lucide="trash-2"></i>
-          删除
+          Delete
         </button>
         <button class="btn btn-primary" id="btn-save">
           <i data-lucide="save"></i>
-          保存
+          Save
         </button>
       </div>
     </div>
@@ -132,7 +135,7 @@
 
   <!-- Toast Notification -->
   <div class="toast" id="toast">
-    <span class="toast-message" id="toast-message">保存成功</span>
+    <span class="toast-message" id="toast-message">Saved successfully</span>
   </div>
 
   <!-- Loading Overlay -->
@@ -143,6 +146,7 @@
   <!-- Scripts -->
   <script src="scripts/pwa.js"></script>
   <script src="scripts/dark-mode.js"></script>
+  <script src="scripts/language.js"></script>
   <script src="scripts/gist.js"></script>
   <script src="scripts/calendar.js"></script>
   <script src="scripts/export.js"></script>

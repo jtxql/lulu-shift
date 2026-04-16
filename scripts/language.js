@@ -1,0 +1,193 @@
+/**
+ * Language Toggle (English / Chinese)
+ */
+const Language = {
+  STORAGE_KEY: 'lulu-shift-lang',
+  currentLang: 'en',
+
+  translations: {
+    en: {
+      appTitle: "LULU's Monthly Schedule",
+      printExport: 'Print / Export',
+      darkMode: 'Dark Mode',
+      monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      legend: {
+        day: 'Day Shift',
+        night: 'Night Shift',
+        rest: 'Day Off',
+        personal: 'Personal Leave',
+        sick: 'Sick Leave',
+        annual: 'Annual Leave'
+      },
+      status: {
+        noSchedule: 'No schedule record for today',
+        onShift: 'You are on shift. {h}h {m}m until shift ends',
+        shiftNotStarted: 'Shift not started. {h}h {m}m until shift begins',
+        shiftEnded: 'Shift has ended',
+        dayShiftNotStarted: 'Day shift not started. {h}h {m}m until shift begins',
+        dayShiftEnded: 'Day shift has ended',
+        nightShiftNotStarted: 'Night shift not started. {h}h {m}m until shift begins',
+        restDay: 'You are on a rest day. {d}d {h}h {m}m until next shift',
+        scheduleLabel: 'Schedule: '
+      },
+      modal: {
+        delete: 'Delete',
+        save: 'Save',
+        pleaseSelect: 'Please select a shift status'
+      },
+      toast: {
+        saved: 'Saved successfully',
+        deleted: 'Deleted'
+      },
+      ottawaTime: 'Ottawa time: {m}/{d} {h}:{i}'
+    },
+    zh: {
+      appTitle: 'LULU的月度排班表',
+      printExport: '打印/导出',
+      darkMode: '深色模式',
+      monthNames: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+      weekdays: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      legend: {
+        day: '白班',
+        night: '夜班',
+        rest: '休息',
+        personal: '事假',
+        sick: '病假',
+        annual: '年假'
+      },
+      status: {
+        noSchedule: '今日无排班记录',
+        onShift: '你正在上班，还有 {h}小时{m}分钟下班',
+        shiftNotStarted: '还没开始上班，还有 {h}小时{m}分钟上班',
+        shiftEnded: '班次已结束',
+        dayShiftNotStarted: '白班还没开始，还有 {h}小时{m}分钟上班',
+        dayShiftEnded: '白班已结束',
+        nightShiftNotStarted: '夜班还没开始，还有 {h}小时{m}分钟上班',
+        restDay: '你正在休息，还有 {d}天{h}小时{m}分钟上班',
+        scheduleLabel: '今日排班：'
+      },
+      modal: {
+        delete: '删除',
+        save: '保存',
+        pleaseSelect: '请选择班次状态'
+      },
+      toast: {
+        saved: '保存成功',
+        deleted: '已删除'
+      },
+      ottawaTime: '现在是渥太华时间 {m}月{d}日 {h}点{i}分'
+    }
+  },
+
+  init() {
+    this.btn = document.getElementById('btn-lang');
+    this.applySavedPreference();
+    this.bindEvents();
+  },
+
+  applySavedPreference() {
+    const saved = localStorage.getItem(this.STORAGE_KEY);
+    this.currentLang = saved || 'en';
+    this.updateUI();
+  },
+
+  bindEvents() {
+    this.btn.addEventListener('click', () => this.toggle());
+  },
+
+  toggle() {
+    this.currentLang = this.currentLang === 'en' ? 'zh' : 'en';
+    localStorage.setItem(this.STORAGE_KEY, this.currentLang);
+    this.updateUI();
+  },
+
+  t(key) {
+    const keys = key.split('.');
+    let val = this.translations[this.currentLang];
+    for (const k of keys) {
+      val = val[k];
+    }
+    return val || key;
+  },
+
+  updateUI() {
+    // Update HTML lang attribute
+    document.documentElement.lang = this.currentLang;
+
+    // Update app title
+    document.querySelector('.app-title').textContent = this.t('appTitle');
+
+    // Update button titles
+    document.getElementById('btn-export').title = this.t('printExport');
+    document.getElementById('btn-dark-mode').title = this.t('darkMode');
+    document.getElementById('btn-lang').title = this.currentLang === 'en' ? '切换中文' : 'Switch to English';
+
+    // Update button icons - show language icon with text
+    const langBtn = document.getElementById('btn-lang');
+    langBtn.innerHTML = this.currentLang === 'en' ? '中' : 'EN';
+
+    // Update weekday headers
+    const weekdayEls = document.querySelectorAll('.weekday');
+    const weekdays = this.t('weekdays');
+    weekdayEls.forEach((el, i) => {
+      el.textContent = weekdays[i];
+    });
+
+    // Update legend
+    const legendItems = document.querySelectorAll('.legend-item');
+    const legendKeys = ['day', 'night', 'rest', 'personal', 'sick', 'annual'];
+    legendItems.forEach((el, i) => {
+      const label = el.textContent.replace(/^[A-Z]\s*/, ''); // Remove existing label
+      el.innerHTML = `<span class="legend-dot" style="background: var(--color-${legendKeys[i] === 'day' ? 'day' : legendKeys[i]})"></span>${this.t('legend.' + legendKeys[i])}`;
+    });
+
+    // Update modal buttons
+    document.getElementById('btn-delete').innerHTML = `<i data-lucide="trash-2"></i> ${this.t('modal.delete')}`;
+    document.getElementById('btn-save').innerHTML = `<i data-lucide="save"></i> ${this.t('modal.save')}`;
+
+    // Update modal status buttons
+    const statusBtns = document.querySelectorAll('.status-btn');
+    const statusKeys = ['day', 'night', 'rest', 'personal', 'sick', 'annual'];
+    statusBtns.forEach((btn, i) => {
+      const span = btn.querySelector('span');
+      const dotColor = span ? span.style.background : '';
+      btn.innerHTML = `<span class="status-dot" style="background: ${dotColor}"></span>${this.t('legend.' + statusKeys[i])}`;
+    });
+
+    // Update title (month/year)
+    this.updateTitle();
+
+    // Update status bar (if visible)
+    if (typeof Calendar !== 'undefined' && Calendar._updateStatusBar) {
+      Calendar._updateStatusBar();
+    }
+
+    lucide.createIcons();
+  },
+
+  updateTitle() {
+    const monthNames = this.t('monthNames');
+    document.getElementById('month-title').textContent = `${monthNames[Calendar.currentMonth - 1]} ${Calendar.currentYear}`;
+  },
+
+  formatTime(hours, minutes) {
+    const m = Calendar._getOttawaDate();
+    const month = m.getMonth() + 1;
+    const date = m.getDate();
+    const template = this.t('ottawaTime');
+    return template
+      .replace('{m}', month)
+      .replace('{d}', date)
+      .replace('{h}', hours)
+      .replace('{i}', String(minutes).padStart(2, '0'));
+  },
+
+  formatShiftStatus(template, params) {
+    let text = template;
+    for (const [key, val] of Object.entries(params)) {
+      text = text.replace(`{${key}}`, val);
+    }
+    return text;
+  }
+};

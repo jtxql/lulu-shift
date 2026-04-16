@@ -16,6 +16,7 @@ const App = {
 
     // Initialize modules
     DarkMode.init();
+    Language.init();
     Calendar.init();
     Export.init();
 

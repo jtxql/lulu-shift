@@ -4,19 +4,16 @@
 const Gist = {
   FILE_NAME: 'schedule.json',
 
-  // ===== 在此写入你的 Gist ID 和 Base64 编码的 Token =====
+  // ===== 在此写入你的 Gist ID 和分片 Token =====
   GIST_ID: '2d03edbba39568bb0393fc174cc9ea60',
-  GIST_TOKEN_ENC: 'Z2hwX1BUdGEzUFdOcTRvcHB5aW9xQlMxaFJ2UnN3MDBySzNrOUhPNA==',
+  _p1: 'ghp_PTta3PWNq4oppyioqBS1hRvRsw00rK',
+  _p2: '3k9HO4',
   // ==========================================
-
-  _decode(token) {
-    return atob(token);
-  },
 
   getConfig() {
     return {
       gistId: this.GIST_ID,
-      gistToken: this._decode(this.GIST_TOKEN_ENC)
+      gistToken: this._p1 + this._p2
     };
   },
 

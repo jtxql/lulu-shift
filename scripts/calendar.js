@@ -41,6 +41,8 @@ const Calendar = {
   _selectionStart: null,
   _selectedDates: new Set(),
   _lastSelectedDate: null,
+  _selectionTimer: null,
+  _isLongPress: false,
 
   // Summary modal refs
   _summaryOverlay: null,
@@ -130,16 +132,34 @@ const Calendar = {
     this.closeModal();
     this._closeSummary();
 
-    this._isSelecting = true;
+    this._isLongPress = false;
     this._selectionStart = cell.dateStr;
     this._selectedDates.clear();
     this._selectedDates.add(cell.dateStr);
     this._lastSelectedDate = cell.dateStr;
     this._updateSelectionUI();
+
+    // Start long press timer (500ms for long press to trigger summary)
+    this._selectionTimer = setTimeout(() => {
+      this._isLongPress = true;
+      // Long press - show summary immediately
+      if (this._selectedDates.size > 0) {
+        this._showSummary();
+        this._clearSelectionUI();
+      }
+    }, 500);
+
+    this._isSelecting = true;
   },
 
   _updateSelection(e) {
     if (!this._isSelecting) return;
+
+    // Cancel long press timer on any movement
+    if (this._selectionTimer) {
+      clearTimeout(this._selectionTimer);
+      this._selectionTimer = null;
+    }
 
     const cell = this._getCellFromEvent(e);
     if (!cell || cell.dateStr === this._lastSelectedDate) return;
@@ -154,12 +174,29 @@ const Calendar = {
 
   _endSelection(e) {
     if (!this._isSelecting) return;
+
+    // Cancel long press timer
+    if (this._selectionTimer) {
+      clearTimeout(this._selectionTimer);
+      this._selectionTimer = null;
+    }
+
     this._isSelecting = false;
 
-    if (this._selectedDates.size > 0) {
-      this._showSummary();
+    if (this._isLongPress) {
+      // Long press already triggered summary in _startSelection
+      this._isLongPress = false;
+      this._clearSelectionUI();
+      return;
     }
+
+    // Short press - open single date modal
     this._clearSelectionUI();
+    if (this._selectionStart) {
+      const dateStr = this._selectionStart;
+      const schedule = this.schedules.find(s => s.date === dateStr);
+      this.openModal(dateStr, schedule);
+    }
   },
 
   _getDateRange(startDate, endDate) {

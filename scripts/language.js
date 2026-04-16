@@ -40,6 +40,18 @@ const Language = {
         saved: 'Saved successfully',
         deleted: 'Deleted'
       },
+      summary: {
+        title: 'Summary',
+        period: 'Period',
+        days: 'Days',
+        workHours: 'Work Hours',
+        dayShifts: 'Day Shifts',
+        nightShifts: 'Night Shifts',
+        hourlyRate: 'Hourly Rate',
+        totalPay: 'Total Pay',
+        allowanceNote: 'Allowances not included',
+        noWork: 'No work shifts in selected period'
+      },
       ottawaTime: 'Ottawa time: {m}/{d} {h}:{i}'
     },
     zh: {
@@ -75,6 +87,18 @@ const Language = {
       toast: {
         saved: '保存成功',
         deleted: '已删除'
+      },
+      summary: {
+        title: '汇总',
+        period: '时间段',
+        days: '共计',
+        workHours: '工作时长',
+        dayShifts: '日班次数',
+        nightShifts: '夜班次数',
+        hourlyRate: '时薪',
+        totalPay: '工资合计',
+        allowanceNote: '津贴部分另计',
+        noWork: '所选时间段内无工作排班'
       },
       ottawaTime: '现在是渥太华时间 {m}月{d}日 {h}点{i}分'
     }

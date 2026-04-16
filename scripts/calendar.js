@@ -36,6 +36,21 @@ const Calendar = {
   modalDate: null,
   statusOptions: null,
 
+  // Multi-day selection state
+  _isSelecting: false,
+  _selectionStart: null,
+  _selectedDates: new Set(),
+  _lastSelectedDate: null,
+
+  // Summary modal refs
+  _summaryOverlay: null,
+  _summaryBody: null,
+  _summaryTitle: null,
+
+  // Pay calculation constants
+  DAILY_HOURS: 11.75,
+  HOURLY_RATE: 43.24,
+
   init() {
     this.grid = document.getElementById('calendar-grid');
     this.titleEl = document.getElementById('month-title');
@@ -44,12 +59,18 @@ const Calendar = {
     this.modalDate = document.getElementById('modal-date');
     this.statusOptions = document.getElementById('status-options');
 
+    // Summary modal refs
+    this._summaryOverlay = document.getElementById('summary-overlay');
+    this._summaryBody = document.getElementById('summary-body');
+    this._summaryTitle = document.getElementById('summary-title');
+
     // Initialize with Ottawa time
     const ottawa = this._getOttawaDateParts();
     this.currentYear = ottawa.year;
     this.currentMonth = ottawa.month;
 
     this.bindEvents();
+    this.bindSelectionEvents();
     this.render();
   },
 
@@ -71,6 +92,200 @@ const Calendar = {
 
     document.getElementById('btn-save').addEventListener('click', () => this.saveStatus());
     document.getElementById('btn-delete').addEventListener('click', () => this.deleteStatus());
+
+    // Summary modal close
+    document.getElementById('summary-close').addEventListener('click', () => this._closeSummary());
+    this._summaryOverlay.addEventListener('click', (e) => {
+      if (e.target === this._summaryOverlay) this._closeSummary();
+    });
+  },
+
+  // ===== Multi-Day Selection =====
+  bindSelectionEvents() {
+    // Mouse events
+    this.grid.addEventListener('mousedown', (e) => this._startSelection(e));
+    this.grid.addEventListener('mousemove', (e) => this._updateSelection(e));
+    document.addEventListener('mouseup', (e) => this._endSelection(e));
+
+    // Touch events
+    this.grid.addEventListener('touchstart', (e) => this._startSelection(e), { passive: true });
+    this.grid.addEventListener('touchmove', (e) => this._updateSelection(e), { passive: true });
+    document.addEventListener('touchend', (e) => this._endSelection(e));
+  },
+
+  _getCellFromEvent(e) {
+    const target = e.target.closest('.day-cell');
+    if (!target) return null;
+    return {
+      dateStr: target.dataset.date,
+      element: target
+    };
+  },
+
+  _startSelection(e) {
+    const cell = this._getCellFromEvent(e);
+    if (!cell) return;
+
+    // Close any open modals first
+    this.closeModal();
+    this._closeSummary();
+
+    this._isSelecting = true;
+    this._selectionStart = cell.dateStr;
+    this._selectedDates.clear();
+    this._selectedDates.add(cell.dateStr);
+    this._lastSelectedDate = cell.dateStr;
+    this._updateSelectionUI();
+  },
+
+  _updateSelection(e) {
+    if (!this._isSelecting) return;
+
+    const cell = this._getCellFromEvent(e);
+    if (!cell || cell.dateStr === this._lastSelectedDate) return;
+
+    // Fill in all dates between _lastSelectedDate and cell.dateStr
+    const dates = this._getDateRange(this._lastSelectedDate, cell.dateStr);
+    dates.forEach(d => this._selectedDates.add(d));
+
+    this._lastSelectedDate = cell.dateStr;
+    this._updateSelectionUI();
+  },
+
+  _endSelection(e) {
+    if (!this._isSelecting) return;
+    this._isSelecting = false;
+
+    if (this._selectedDates.size > 0) {
+      this._showSummary();
+    }
+    this._clearSelectionUI();
+  },
+
+  _getDateRange(startDate, endDate) {
+    const dates = [];
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start > end) {
+      // Swap if selection goes backwards
+      [start, end] = [end, start];
+    }
+
+    const current = new Date(start);
+    while (current <= end) {
+      dates.push(current.toISOString().split('T')[0]);
+      current.setDate(current.getDate() + 1);
+    }
+    return dates;
+  },
+
+  _updateSelectionUI() {
+    // Remove selecting class from all cells first
+    this.grid.querySelectorAll('.day-cell.selecting, .day-cell.selected').forEach(cell => {
+      cell.classList.remove('selecting', 'selected');
+    });
+
+    // Add selecting class to all selected cells
+    this._selectedDates.forEach(dateStr => {
+      const cell = this.grid.querySelector(`.day-cell[data-date="${dateStr}"]`);
+      if (cell) {
+        cell.classList.add('selected');
+      }
+    });
+  },
+
+  _clearSelectionUI() {
+    this.grid.querySelectorAll('.day-cell.selecting, .day-cell.selected').forEach(cell => {
+      cell.classList.remove('selecting', 'selected');
+    });
+    this._selectedDates.clear();
+  },
+
+  _showSummary() {
+    const sortedDates = Array.from(this._selectedDates).sort();
+    const startDate = sortedDates[0];
+    const endDate = sortedDates[sortedDates.length - 1];
+    const totalDays = sortedDates.length;
+
+    // Calculate work statistics
+    let dayShiftCount = 0;
+    let nightShiftCount = 0;
+    let workDays = 0;
+
+    sortedDates.forEach(dateStr => {
+      const schedule = this.schedules.find(s => s.date === dateStr);
+      if (schedule && (schedule.type === 'day' || schedule.type === 'night')) {
+        workDays++;
+        if (schedule.type === 'day') dayShiftCount++;
+        else if (schedule.type === 'night') nightShiftCount++;
+      }
+    });
+
+    const totalWorkHours = (dayShiftCount + nightShiftCount) * this.DAILY_HOURS;
+    const totalPay = totalWorkHours * this.HOURLY_RATE;
+
+    // Format date range display
+    const startParts = startDate.split('-');
+    const endParts = endDate.split('-');
+    const startFmt = Language.currentLang === 'zh'
+      ? `${parseInt(startParts[1])}月${parseInt(startParts[2])}日`
+      : `${parseInt(startParts[1])}/${parseInt(startParts[2])}`;
+    const endFmt = Language.currentLang === 'zh'
+      ? `${parseInt(endParts[1])}月${parseInt(endParts[2])}日`
+      : `${parseInt(endParts[1])}/${parseInt(endParts[2])}`;
+
+    const periodStr = startDate === endDate ? startFmt : `${startFmt} - ${endFmt}`;
+
+    // Build summary HTML
+    let html = `
+      <div class="summary-row">
+        <span class="summary-label">${Language.t('summary.period')}</span>
+        <span class="summary-value">${periodStr}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">${Language.t('summary.days')}</span>
+        <span class="summary-value">${totalDays} ${Language.currentLang === 'zh' ? '天' : 'days'}</span>
+      </div>
+    `;
+
+    if (workDays > 0) {
+      html += `
+        <div class="summary-breakdown">
+          <div class="summary-breakdown-row">
+            <span>${Language.t('summary.dayShifts')}</span>
+            <span>${dayShiftCount} × 11.75h</span>
+          </div>
+          <div class="summary-breakdown-row">
+            <span>${Language.t('summary.nightShifts')}</span>
+            <span>${nightShiftCount} × 11.75h</span>
+          </div>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">${Language.t('summary.workHours')}</span>
+          <span class="summary-value">${totalWorkHours.toFixed(2)} h</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">${Language.t('summary.hourlyRate')}</span>
+          <span class="summary-value">$${this.HOURLY_RATE.toFixed(2)} CAD</span>
+        </div>
+        <div class="summary-row total">
+          <span class="summary-label">${Language.t('summary.totalPay')}</span>
+          <span class="summary-value">$${totalPay.toFixed(2)} CAD</span>
+        </div>
+        <div class="summary-note">${Language.t('summary.allowanceNote')}</div>
+      `;
+    } else {
+      html += `<div class="summary-note">${Language.t('summary.noWork')}</div>`;
+    }
+
+    this._summaryTitle.textContent = Language.t('summary.title');
+    this._summaryBody.innerHTML = html;
+    this._summaryOverlay.classList.add('active');
+  },
+
+  _closeSummary() {
+    this._summaryOverlay.classList.remove('active');
   },
 
   prevMonth() {
@@ -328,7 +543,12 @@ const Calendar = {
       cell.innerHTML = `<span class="day-number">${day}</span>`;
     }
 
-    cell.addEventListener('click', () => this.openModal(dateStr, schedule));
+    // Only bind click for single date selection (not during drag)
+    cell.addEventListener('click', (e) => {
+      if (!this._isSelecting) {
+        this.openModal(dateStr, schedule);
+      }
+    });
     return cell;
   },
 
@@ -412,7 +632,7 @@ const Calendar = {
     const success = await Gist.save(this.schedules);
     App.showLoading(false);
     if (success) {
-      App.showToast('Deleted');
+      App.showToast(Language.t('toast.deleted'));
       this.closeModal();
       this.render();
     }

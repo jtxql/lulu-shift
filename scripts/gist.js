@@ -5,8 +5,8 @@ const Gist = {
   FILE_NAME: 'schedule.json',
 
   // ===== 在此写入你的 Gist ID 和 Token =====
-  GIST_ID: 'your-gist-id-here',
-  GIST_TOKEN: 'your-github-token-here',
+  GIST_ID: '2d03edbba39568bb0393fc174cc9ea60',
+  GIST_TOKEN: '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',
   // ==========================================
 
   getConfig() {

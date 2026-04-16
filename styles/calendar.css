@@ -1,296 +1,116 @@
-/* ===== Calendar Container ===== */
-.calendar-container {
-  max-width: 800px;
-  margin: var(--spacing-lg) auto;
-  padding: 0 var(--spacing-md);
-}
+/* ===== Calendar Animations ===== */
 
-/* ===== Month Navigation ===== */
-.month-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
-}
-
-.month-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-  min-width: 160px;
-  text-align: center;
-}
-
-.nav-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: none;
-  border-radius: var(--radius-md);
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
-}
-
-.nav-btn:hover {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.nav-btn:active {
-  transform: translateY(0);
-}
-
-.nav-btn svg {
-  width: 24px;
-  height: 24px;
-}
-
-/* ===== Weekday Header ===== */
-.weekday-header {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-sm);
-}
-
-.weekday {
-  text-align: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: var(--spacing-sm);
-}
-
-.weekday.weekend {
-  color: var(--color-sick);
-}
-
-/* ===== Calendar Grid ===== */
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: var(--spacing-xs);
-  background: var(--bg-primary);
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-float);
-}
-
-/* ===== Day Cell ===== */
+/* Cell appear animation */
 .day-cell {
-  aspect-ratio: 1;
-  min-height: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-primary);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  position: relative;
-  border: 2px solid transparent;
+  animation: cellAppear 0.3s ease forwards;
+  opacity: 0;
 }
 
-.day-cell:hover:not(.empty):not(.adjacent-month) {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--border-color);
+@keyframes cellAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.day-cell.adjacent-month {
-  background: var(--bg-secondary);
+/* Stagger the animation for each cell */
+.calendar-grid .day-cell:nth-child(1) { animation-delay: 0ms; }
+.calendar-grid .day-cell:nth-child(2) { animation-delay: 10ms; }
+.calendar-grid .day-cell:nth-child(3) { animation-delay: 20ms; }
+.calendar-grid .day-cell:nth-child(4) { animation-delay: 30ms; }
+.calendar-grid .day-cell:nth-child(5) { animation-delay: 40ms; }
+.calendar-grid .day-cell:nth-child(6) { animation-delay: 50ms; }
+.calendar-grid .day-cell:nth-child(7) { animation-delay: 60ms; }
+.calendar-grid .day-cell:nth-child(8) { animation-delay: 70ms; }
+.calendar-grid .day-cell:nth-child(9) { animation-delay: 80ms; }
+.calendar-grid .day-cell:nth-child(10) { animation-delay: 90ms; }
+.calendar-grid .day-cell:nth-child(11) { animation-delay: 100ms; }
+.calendar-grid .day-cell:nth-child(12) { animation-delay: 110ms; }
+.calendar-grid .day-cell:nth-child(13) { animation-delay: 120ms; }
+.calendar-grid .day-cell:nth-child(14) { animation-delay: 130ms; }
+.calendar-grid .day-cell:nth-child(15) { animation-delay: 140ms; }
+.calendar-grid .day-cell:nth-child(16) { animation-delay: 150ms; }
+.calendar-grid .day-cell:nth-child(17) { animation-delay: 160ms; }
+.calendar-grid .day-cell:nth-child(18) { animation-delay: 170ms; }
+.calendar-grid .day-cell:nth-child(19) { animation-delay: 180ms; }
+.calendar-grid .day-cell:nth-child(20) { animation-delay: 190ms; }
+.calendar-grid .day-cell:nth-child(21) { animation-delay: 200ms; }
+.calendar-grid .day-cell:nth-child(22) { animation-delay: 210ms; }
+.calendar-grid .day-cell:nth-child(23) { animation-delay: 220ms; }
+.calendar-grid .day-cell:nth-child(24) { animation-delay: 230ms; }
+.calendar-grid .day-cell:nth-child(25) { animation-delay: 240ms; }
+.calendar-grid .day-cell:nth-child(26) { animation-delay: 250ms; }
+.calendar-grid .day-cell:nth-child(27) { animation-delay: 260ms; }
+.calendar-grid .day-cell:nth-child(28) { animation-delay: 270ms; }
+.calendar-grid .day-cell:nth-child(29) { animation-delay: 280ms; }
+.calendar-grid .day-cell:nth-child(30) { animation-delay: 290ms; }
+.calendar-grid .day-cell:nth-child(31) { animation-delay: 300ms; }
+.calendar-grid .day-cell:nth-child(32) { animation-delay: 310ms; }
+.calendar-grid .day-cell:nth-child(33) { animation-delay: 320ms; }
+.calendar-grid .day-cell:nth-child(34) { animation-delay: 330ms; }
+.calendar-grid .day-cell:nth-child(35) { animation-delay: 340ms; }
+.calendar-grid .day-cell:nth-child(36) { animation-delay: 350ms; }
+.calendar-grid .day-cell:nth-child(37) { animation-delay: 360ms; }
+.calendar-grid .day-cell:nth-child(38) { animation-delay: 370ms; }
+.calendar-grid .day-cell:nth-child(39) { animation-delay: 380ms; }
+.calendar-grid .day-cell:nth-child(40) { animation-delay: 390ms; }
+.calendar-grid .day-cell:nth-child(41) { animation-delay: 400ms; }
+.calendar-grid .day-cell:nth-child(42) { animation-delay: 410ms; }
+
+/* Hover effect for status indicator */
+.day-cell .day-status {
+  transition: transform 0.2s ease;
 }
 
-.day-cell.adjacent-month .day-number {
-  color: var(--text-muted);
+.day-cell:hover .day-status {
+  transform: scale(1.3);
 }
 
-.day-cell.adjacent-month.weekend .day-number {
-  color: var(--text-muted);
-}
-
-.day-cell.today {
-  border-color: var(--color-day);
-}
-
-.day-number {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.day-cell.empty .day-number {
-  color: var(--text-muted);
-}
-
-.day-cell.weekend:not(.empty):not(.adjacent-month) .day-number {
-  color: var(--color-sick);
-}
-
-/* ===== Day Status Indicator ===== */
-.day-status {
-  width: 8px;
-  height: 8px;
+/* Today pulse effect */
+.day-cell.today::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  background: var(--color-primary);
   border-radius: 50%;
-  margin-top: 2px;
+  animation: pulse 2s infinite;
 }
 
-.day-status.day {
-  background: var(--color-day);
-}
-
-.day-status.night {
-  background: var(--color-night);
-}
-
-.day-status.rest {
-  background: var(--color-rest);
-}
-
-.day-status.personal {
-  background: var(--color-personal);
-}
-
-.day-status.sick {
-  background: var(--color-sick);
-}
-
-.day-status.annual {
-  background: var(--color-annual);
-}
-
-/* ===== Day Cell with Status ===== */
-.day-cell.has-status {
-  background: var(--bg-secondary);
-}
-
-.day-cell.has-status .day-number {
-  font-weight: 600;
-}
-
-.day-cell.has-status.day {
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.day-cell.has-status.night {
-  background: rgba(249, 115, 22, 0.1);
-}
-
-.day-cell.has-status.rest {
-  background: rgba(139, 92, 246, 0.1);
-}
-
-.day-cell.has-status.personal {
-  background: rgba(6, 182, 212, 0.1);
-}
-
-.day-cell.has-status.sick {
-  background: rgba(236, 72, 153, 0.1);
-}
-
-.day-cell.has-status.annual {
-  background: rgba(16, 185, 129, 0.1);
-}
-
-/* ===== Legend ===== */
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md);
-  background: var(--bg-primary);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.legend-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 640px) {
-  .calendar-container {
-    margin: var(--spacing-md) auto;
-    padding: 0 var(--spacing-sm);
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
   }
-
-  .month-title {
-    font-size: 1.25rem;
-    min-width: 120px;
-  }
-
-  .weekday {
-    font-size: 0.625rem;
-    padding: var(--spacing-xs);
-  }
-
-  .day-cell {
-    min-height: 40px;
-  }
-
-  .day-number {
-    font-size: 0.75rem;
-  }
-
-  .day-status {
-    width: 6px;
-    height: 6px;
-  }
-
-  .legend {
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
-  }
-
-  .legend-item {
-    font-size: 0.625rem;
-  }
-
-  .legend-dot {
-    width: 8px;
-    height: 8px;
-  }
-
-  .status-options {
-    grid-template-columns: repeat(2, 1fr);
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
   }
 }
 
-@media (min-width: 768px) {
-  .day-cell {
-    min-height: 64px;
-  }
+/* Month transition */
+.month-title {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
 
-  .day-number {
-    font-size: 1rem;
-  }
+.month-nav.switching .month-title {
+  opacity: 0;
+  transform: translateY(-10px);
+}
 
-  .day-status {
-    width: 10px;
-    height: 10px;
-  }
+/* Shake animation for error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.status-options.error {
+  animation: shake 0.3s ease;
 }

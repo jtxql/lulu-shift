@@ -48,8 +48,11 @@ const Language = {
         dayShifts: 'Day Shifts',
         nightShifts: 'Night Shifts',
         hourlyRate: 'Hourly Rate',
-        totalPay: 'Total Pay',
-        allowanceNote: 'Allowances not included',
+        eveningAllowance: 'Evening Premium (15-23h)',
+        nightShiftAllowance: 'Night Premium (23-07h)',
+        weekendAllowance: 'Weekend Premium',
+        totalPayWithAllowance: 'Total (incl. premiums)',
+        allowanceNote: 'Premiums calculated separately',
         noWork: 'No work shifts in selected period'
       },
       ottawaTime: 'Ottawa time: {m}/{d} {h}:{i}'
@@ -96,8 +99,11 @@ const Language = {
         dayShifts: '日班次数',
         nightShifts: '夜班次数',
         hourlyRate: '时薪',
-        totalPay: '工资合计',
-        allowanceNote: '津贴部分另计',
+        eveningAllowance: '晚班津贴 (15-23点)',
+        nightShiftAllowance: '夜班津贴 (23-07点)',
+        weekendAllowance: '周末津贴',
+        totalPayWithAllowance: '工资合计(含津贴)',
+        allowanceNote: '津贴另行计算',
         noWork: '所选时间段内无工作排班'
       },
       ottawaTime: '现在是渥太华时间 {m}月{d}日 {h}点{i}分'

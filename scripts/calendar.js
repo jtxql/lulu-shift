@@ -52,6 +52,10 @@ const Calendar = {
   // Pay calculation constants
   DAILY_HOURS: 11.75,
   HOURLY_RATE: 43.24,
+  // Allowance rates (CAD/hour)
+  EVENING_RATE: 2.5,    // 15:00-23:00
+  NIGHT_RATE: 3.2,       // 23:00-07:00
+  WEEKEND_RATE: 3.0,     // Fri 24:00 - Sun 24:00
 
   init() {
     this.grid = document.getElementById('calendar-grid');
@@ -266,10 +270,13 @@ const Calendar = {
     const endDate = sortedDates[sortedDates.length - 1];
     const totalDays = sortedDates.length;
 
-    // Calculate work statistics
+    // Calculate work statistics and allowances
     let dayShiftCount = 0;
     let nightShiftCount = 0;
     let workDays = 0;
+    let eveningAllowance = 0;
+    let nightAllowance = 0;
+    let weekendAllowance = 0;
 
     sortedDates.forEach(dateStr => {
       const schedule = this.schedules.find(s => s.date === dateStr);
@@ -277,11 +284,18 @@ const Calendar = {
         workDays++;
         if (schedule.type === 'day') dayShiftCount++;
         else if (schedule.type === 'night') nightShiftCount++;
+
+        const { eveningHrs, nightHrs, weekendHrs } = this._calcShiftAllowance(dateStr, schedule.type);
+        eveningAllowance += eveningHrs * this.EVENING_RATE;
+        nightAllowance += nightHrs * this.NIGHT_RATE;
+        weekendAllowance += weekendHrs * this.WEEKEND_RATE;
       }
     });
 
     const totalWorkHours = (dayShiftCount + nightShiftCount) * this.DAILY_HOURS;
-    const totalPay = totalWorkHours * this.HOURLY_RATE;
+    const basePay = totalWorkHours * this.HOURLY_RATE;
+    const totalAllowance = eveningAllowance + nightAllowance + weekendAllowance;
+    const totalPay = basePay + totalAllowance;
 
     // Format date range display
     const startParts = startDate.split('-');
@@ -327,11 +341,30 @@ const Calendar = {
           <span class="summary-label">${Language.t('summary.hourlyRate')}</span>
           <span class="summary-value">$${this.HOURLY_RATE.toFixed(2)} CAD</span>
         </div>
+      `;
+
+      if (totalAllowance > 0) {
+        html += `
+          <div class="summary-row">
+            <span class="summary-label">${Language.t('summary.eveningAllowance')}</span>
+            <span class="summary-value">$${eveningAllowance.toFixed(2)} CAD</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">${Language.t('summary.nightShiftAllowance')}</span>
+            <span class="summary-value">$${nightAllowance.toFixed(2)} CAD</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">${Language.t('summary.weekendAllowance')}</span>
+            <span class="summary-value">$${weekendAllowance.toFixed(2)} CAD</span>
+          </div>
+        `;
+      }
+
+      html += `
         <div class="summary-row total">
-          <span class="summary-label">${Language.t('summary.totalPay')}</span>
+          <span class="summary-label">${Language.t('summary.totalPayWithAllowance')}</span>
           <span class="summary-value">$${totalPay.toFixed(2)} CAD</span>
         </div>
-        <div class="summary-note">${Language.t('summary.allowanceNote')}</div>
       `;
     } else {
       html += `<div class="summary-note">${Language.t('summary.noWork')}</div>`;
@@ -340,6 +373,98 @@ const Calendar = {
     this._summaryTitle.textContent = Language.t('summary.title');
     this._summaryBody.innerHTML = html;
     this._summaryOverlay.classList.add('active');
+  },
+
+  /**
+   * Calculate allowance hours for a given shift
+   * @returns {eveningHrs, nightHrs, weekendHrs} in hours (decimal)
+   */
+  _calcShiftAllowance(dateStr, shiftType) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const shiftDate = new Date(y, m - 1, d);
+
+    // Minutes from midnight
+    const DAY_START_MIN = 7 * 60 + 30;   // 07:30 = 450
+    const DAY_END_MIN = 19 * 60 + 15;    // 19:15 = 1155
+    const NIGHT_START_MIN = 19 * 60 + 30; // 19:30 = 1170
+    const NIGHT_END_MIN = 7 * 60 + 15;    // 07:15 = 435 (next day)
+    const EVENING_START = 15 * 60;        // 15:00 = 900
+    const EVENING_END = 23 * 60;          // 23:00 = 1380
+    const NIGHT_START = 23 * 60;         // 23:00 = 1380
+    const NIGHT_END = 7 * 60;             // 07:00 = 420 (next day)
+
+    let eveningHrs = 0;
+    let nightHrs = 0;
+    let weekendHrs = 0;
+
+    if (shiftType === 'day') {
+      // Day shift: 07:30 - 19:15
+      const shiftStart = DAY_START_MIN;
+      const shiftEnd = DAY_END_MIN;
+
+      // Evening window: 15:00-23:00
+      eveningHrs = this._overlapHours(shiftStart, shiftEnd, EVENING_START, EVENING_END);
+
+      // Night window: 23:00-07:00 (none for day shift)
+      nightHrs = 0;
+
+      // Weekend window check (Fri 24:00 - Sun 24:00)
+      weekendHrs = this._inWeekendWindow(shiftDate) ? this.DAILY_HOURS : 0;
+
+    } else if (shiftType === 'night') {
+      // Night shift: 19:30 - 07:15 next day
+      // Part 1: 19:30-midnight (day D)
+      const part1Start = NIGHT_START_MIN;
+      const part1End = 24 * 60;
+      // Part 2: midnight-07:15 (day D+1)
+      const part2Start = 0;
+      const part2End = NIGHT_END_MIN;
+
+      // Evening window: 15:00-23:00
+      eveningHrs += this._overlapHours(part1Start, part1End, EVENING_START, EVENING_END);
+      // Night window: 23:00-07:00 (crosses midnight)
+      nightHrs += this._overlapHours(part1Start, part1End, NIGHT_START, 24 * 60);
+      nightHrs += this._overlapHours(part2Start, part2End, 0, NIGHT_END);
+
+      // Weekend window: Fri 24:00 - Sun 24:00
+      // Check if shift date or next day is Sat/Sun
+      const nextDayDate = new Date(shiftDate);
+      nextDayDate.setDate(nextDayDate.getDate() + 1);
+      if (this._inWeekendWindow(shiftDate) || this._inWeekendWindow(nextDayDate)) {
+        weekendHrs = this.DAILY_HOURS;
+      }
+    }
+
+    return { eveningHrs, nightHrs, weekendHrs };
+  },
+
+  /**
+   * Calculate overlap in hours between two time windows [aStart,aEnd] and [bStart,bEnd]
+   * All times are in minutes from midnight; handles overnight windows where end < start
+   */
+  _overlapHours(start1, end1, start2, end2) {
+    // Handle overnight windows (where end < start means it wraps to next day)
+    const overlap = (s1, e1, s2, e2) => {
+      const s = Math.max(s1, s2);
+      const e = Math.min(e1, e2);
+      return Math.max(0, e - s);
+    };
+
+    if (end1 <= start2) return 0; // shift ends before window starts
+
+    // For non-overnight windows
+    let totalOverlap = overlap(start1, end1, start2, end2);
+    return totalOverlap / 60;
+  },
+
+  /**
+   * Check if a date falls within the weekend allowance window
+   * Weekend window: Fri 24:00 (Sat 00:00) through Sun 24:00 (Mon 00:00)
+   * i.e., Saturday 00:00:00 through Sunday 23:59:59
+   */
+  _inWeekendWindow(date) {
+    const dow = date.getDay(); // 0=Sun, 6=Sat
+    return dow === 0 || dow === 6; // Sunday or Saturday
   },
 
   _closeSummary() {

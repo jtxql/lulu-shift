@@ -29,7 +29,8 @@ const Language = {
         dayShiftEnded: 'Day shift has ended',
         nightShiftNotStarted: 'Night shift not started. {h}h {m}m until shift begins',
         restDay: 'You are on a rest day. {d}d {h}h {m}m until next shift',
-        scheduleLabel: 'Schedule: '
+        scheduleLabel: 'Schedule: ',
+        payday: 'Next pay day: {date} ({days} days)'
       },
       modal: {
         delete: 'Delete',
@@ -80,7 +81,8 @@ const Language = {
         dayShiftEnded: '白班已结束',
         nightShiftNotStarted: '夜班还没开始，还有 {h}小时{m}分钟上班',
         restDay: '你正在休息，还有 {d}天{h}小时{m}分钟上班',
-        scheduleLabel: '今日排班：'
+        scheduleLabel: '今日排班：',
+        payday: '下一个发薪日：{date}（还有{days}天）'
       },
       modal: {
         delete: '删除',

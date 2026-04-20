@@ -295,6 +295,13 @@
   opacity: 0.6;
 }
 
+.status-payday {
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .status-bar {
     padding: var(--space-sm) var(--space-md);

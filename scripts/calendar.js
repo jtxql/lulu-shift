@@ -525,6 +525,19 @@ const Calendar = {
         .catch(() => {});
     }
 
+    // Display next pay day
+    const { payDate, daysUntil } = this._getNextPayDay();
+    const payDayEl = document.getElementById('status-payday');
+    if (payDayEl) {
+      const payDateStr = Language.currentLang === 'zh'
+        ? `${payDate.getMonth() + 1}月${payDate.getDate()}日`
+        : `${payDate.toLocaleString('en', { month: 'short' })} ${payDate.getDate()}`;
+      payDayEl.textContent = Language.formatShiftStatus(Language.t('status.payday'), {
+        date: payDateStr,
+        days: daysUntil
+      });
+    }
+
     // Find today's schedule
     const todayStr = `${year}-${String(month).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
     const todaySchedule = this.schedules.find(s => s.date === todayStr);
@@ -638,6 +651,47 @@ const Calendar = {
     const minutes = totalMinutes % 60;
 
     return { days, hours, minutes };
+  },
+
+  /**
+   * Calculate the next pay day.
+   * Rules: 2nd Friday of the year is the 1st pay day (Jan 9, 2026),
+   *        then every 14 days thereafter.
+   * @returns {{payDate: Date, daysUntil: number}}
+   */
+  _getNextPayDay() {
+    const now = this._getOttawaDate();
+    const currentYear = now.getFullYear();
+
+    // First pay day of the year: 2nd Friday of January
+    // Jan 1, 2026 = Thursday, Jan 2 = Friday (1st Friday), Jan 9 = Friday (2nd Friday)
+    let firstPayDay = new Date(currentYear, 0, 9); // Jan 9
+
+    // Verify it's actually a Friday (for safety)
+    // If not, find the 2nd Friday
+    if (firstPayDay.getDay() !== 5) {
+      // Find 1st Friday of January
+      let d = new Date(currentYear, 0, 1);
+      while (d.getDay() !== 5) d.setDate(d.getDate() + 1);
+      // 2nd Friday
+      d.setDate(d.getDate() + 7);
+      firstPayDay = d;
+    }
+
+    const nowMs = now.getTime();
+    const firstPayMs = firstPayDay.getTime();
+
+    // If we're past the first pay day this year, start from it
+    // Otherwise use first pay day of this year
+    let payDay = new Date(firstPayDay);
+
+    // Find the next pay day from today
+    while (payDay.getTime() <= nowMs) {
+      payDay.setDate(payDay.getDate() + 14);
+    }
+
+    const daysUntil = Math.ceil((payDay.getTime() - nowMs) / (24 * 60 * 60 * 1000));
+    return { payDate: payDay, daysUntil };
   },
 
   render() {

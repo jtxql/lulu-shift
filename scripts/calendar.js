@@ -50,7 +50,7 @@ const Calendar = {
   _summaryTitle: null,
 
   // Pay calculation constants
-  DAILY_HOURS: 11.75,
+  DAILY_HOURS: 11.25,
   HOURLY_RATE: 43.24,
   // Allowance rates (CAD/hour)
   EVENING_RATE: 2.5,    // 15:00-23:00
@@ -326,11 +326,11 @@ const Calendar = {
         <div class="summary-breakdown">
           <div class="summary-breakdown-row">
             <span>${Language.t('summary.dayShifts')}</span>
-            <span>${dayShiftCount} × 11.75h</span>
+            <span>${dayShiftCount} × 11.25h</span>
           </div>
           <div class="summary-breakdown-row">
             <span>${Language.t('summary.nightShifts')}</span>
-            <span>${nightShiftCount} × 11.75h</span>
+            <span>${nightShiftCount} × 11.25h</span>
           </div>
         </div>
         <div class="summary-row">

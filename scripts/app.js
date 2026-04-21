@@ -19,6 +19,7 @@ const App = {
     Language.init();
     Calendar.init();
     Export.init();
+    Weather.init();
 
     // Load data from Gist
     await this.loadData();

@@ -202,6 +202,117 @@
   font-weight: 500;
 }
 
+/* ===== Status Bar ===== */
+.status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-md) var(--space-lg);
+  text-align: center;
+  z-index: 50;
+}
+
+.status-time {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.status-shift {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+.status-shift.working {
+  color: var(--color-day);
+}
+
+.status-shift.resting {
+  color: var(--color-rest);
+}
+
+.status-payday,
+.status-version {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* ===== Weather Display ===== */
+.status-weather {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.weather-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.weather-city {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.weather-icon {
+  font-size: 0.875rem;
+}
+
+.weather-temp {
+  font-family: monospace;
+}
+
+/* ===== Loading Overlay ===== */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .status-bar {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .status-time {
+    font-size: 0.75rem;
+  }
+
+  .status-shift {
+    font-size: 0.875rem;
+  }
+}
+
 /* ===== Print Styles ===== */
 @media print {
   .app-header,
@@ -252,70 +363,5 @@
 
   .weekday.weekend {
     color: #dc2626;
-  }
-}
-
-/* ===== Status Bar ===== */
-.status-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  padding: var(--space-md) var(--space-lg);
-  text-align: center;
-  z-index: 50;
-}
-
-.status-time {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-xs);
-}
-
-.status-shift {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.status-shift.working {
-  color: var(--color-day);
-}
-
-.status-shift.resting {
-  color: var(--color-rest);
-}
-
-.status-version {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  margin-top: 4px;
-  opacity: 0.6;
-}
-
-.status-payday {
-  font-size: 0.75rem;
-  color: var(--color-primary);
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-@media (max-width: 640px) {
-  .status-bar {
-    padding: var(--space-sm) var(--space-md);
-  }
-
-  .status-time {
-    font-size: 0.75rem;
-  }
-
-  .status-shift {
-    font-size: 0.875rem;
-  }
-
-  .status-version {
-    font-size: 0.65rem;
   }
 }

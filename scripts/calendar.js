@@ -581,23 +581,40 @@ const Calendar = {
         shiftEl.className = 'status-shift';
       }
     } else if (type === 'night') {
-      // Night shift
+      // Night shift starts at 19:30 on the given day, ends at 07:30 next day
       if (currentMinutes >= nightStart) {
-        // 19:30 ~ 23:59 on night shift
+        // 19:30 ~ 23:59 - tonight's night shift has started
         const remaining = 24 * 60 - currentMinutes + nightEnd;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;
         shiftEl.textContent = Language.formatShiftStatus(Language.t('status.onShift'), { h: rh, m: rm });
         shiftEl.className = 'status-shift working';
       } else if (currentMinutes < nightEnd) {
-        // 00:00 ~ 07:30 on night shift (spans midnight)
-        const remaining = nightEnd - currentMinutes;
-        const rh = Math.floor(remaining / 60);
-        const rm = remaining % 60;
-        shiftEl.textContent = Language.formatShiftStatus(Language.t('status.onShift'), { h: rh, m: rm });
-        shiftEl.className = 'status-shift working';
+        // 00:00 ~ 07:30
+        // Case A: previous day was night shift -> still on the tail of that shift (ends today 07:30)
+        // Case B: previous day was NOT night shift -> today's night shift hasn't started yet (starts tonight 19:30)
+        const yesterday = new Date(year, month - 1, date - 1);
+        const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+        const yesterdaySchedule = this.schedules.find(s => s.date === yesterdayStr);
+        const wasNightShift = yesterdaySchedule && yesterdaySchedule.type === 'night';
+
+        if (wasNightShift) {
+          // Case A: still on overnight portion of previous night's shift
+          const remaining = nightEnd - currentMinutes;
+          const rh = Math.floor(remaining / 60);
+          const rm = remaining % 60;
+          shiftEl.textContent = Language.formatShiftStatus(Language.t('status.onShift'), { h: rh, m: rm });
+          shiftEl.className = 'status-shift working';
+        } else {
+          // Case B: today's night shift not started yet
+          const remaining = nightStart - currentMinutes;
+          const rh = Math.floor(remaining / 60);
+          const rm = remaining % 60;
+          shiftEl.textContent = Language.formatShiftStatus(Language.t('status.nightShiftNotStarted'), { h: rh, m: rm });
+          shiftEl.className = 'status-shift resting';
+        }
       } else {
-        // 07:30 ~ 19:30 night shift not started
+        // 07:30 ~ 19:30 - today's night shift not started yet
         const remaining = nightStart - currentMinutes;
         const rh = Math.floor(remaining / 60);
         const rm = remaining % 60;

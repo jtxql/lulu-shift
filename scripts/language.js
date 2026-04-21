@@ -56,7 +56,7 @@ const Language = {
         allowanceNote: 'Premiums calculated separately',
         noWork: 'No work shifts in selected period'
       },
-      ottawaTime: 'Ottawa time: {m}/{d} {h}:{i}'
+      ottawaTime: 'Ottawa time: {m}/{d}({w}) {h}:{i}'
     },
     zh: {
       appTitle: 'LULU的月度排班表',
@@ -108,7 +108,7 @@ const Language = {
         allowanceNote: '津贴另行计算',
         noWork: '所选时间段内无工作排班'
       },
-      ottawaTime: '现在是渥太华时间 {m}月{d}日 {h}点{i}分'
+      ottawaTime: '渥太华时间 {m}月{d}日({w}) {h}:{i}'
     }
   },
 
@@ -207,10 +207,13 @@ const Language = {
     const m = Calendar._getOttawaDate();
     const month = m.getMonth() + 1;
     const date = m.getDate();
+    const day = m.getDay(); // 0=Sun ... 6=Sat
+    const weekday = this.t('weekdays')[day === 0 ? 6 : day - 1]; // Mon=0 ... Sun=6
     const template = this.t('ottawaTime');
     return template
       .replace('{m}', month)
       .replace('{d}', date)
+      .replace('{w}', weekday)
       .replace('{h}', hours)
       .replace('{i}', String(minutes).padStart(2, '0'));
   },

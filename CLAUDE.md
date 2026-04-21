@@ -56,7 +56,7 @@ This is a **PWA monthly work schedule calendar** for a rotating shift worker. Th
 
 ### Pay Calculation (in `calendar.js`)
 - Day shift: 07:30–19:15, Night shift: 19:30–07:15 next day
-- Hourly rate: $43.24 CAD, Daily hours: 11.75h
+- Hourly rate: $43.24 CAD, Daily hours: 11.25h
 - Allowances: evening (15:00–23:00), night (23:00–07:00), weekend (Sat/Sun)
 - Pay days: 2nd Friday of each month, then every 14 days
 

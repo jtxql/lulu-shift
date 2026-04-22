@@ -33,8 +33,9 @@ const App = {
       const savedLang = localStorage.getItem('lulu-shift-lang');
       localStorage.clear();
       if (savedLang) localStorage.setItem('lulu-shift-lang', savedLang);
-      // Reload
-      location.reload(true);
+      // Reload with cache-busting URL to skip SW cache
+      const url = (window.location.href.split('?')[0]) + '?t=' + Date.now();
+      window.location.replace(url);
     });
 
     // Load data from Gist

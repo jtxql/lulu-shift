@@ -525,7 +525,7 @@ const Calendar = {
     // Display version from manifest
     const versionEl = document.getElementById('status-version');
     if (versionEl && !versionEl.textContent) {
-      fetch('manifest.json')
+      fetch('manifest.json?t=' + Date.now())
         .then(r => r.json())
         .then(data => {
           versionEl.textContent = 'v' + data.version;

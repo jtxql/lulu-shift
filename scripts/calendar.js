@@ -83,6 +83,7 @@ const Calendar = {
   bindEvents() {
     document.getElementById('btn-prev-month').addEventListener('click', () => this.prevMonth());
     document.getElementById('btn-next-month').addEventListener('click', () => this.nextMonth());
+    document.getElementById('btn-today').addEventListener('click', () => this.goToToday());
 
     document.getElementById('modal-close').addEventListener('click', () => this.closeModal());
     this.overlay.addEventListener('click', (e) => {
@@ -486,6 +487,13 @@ const Calendar = {
       this.currentMonth = 1;
       this.currentYear++;
     }
+    this.render();
+  },
+
+  goToToday() {
+    const ottawa = this._getOttawaDateParts();
+    this.currentYear = ottawa.year;
+    this.currentMonth = ottawa.month;
     this.render();
   },
 

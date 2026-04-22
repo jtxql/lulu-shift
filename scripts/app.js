@@ -21,6 +21,22 @@ const App = {
     Export.init();
     Weather.init();
 
+    // Reload button (clear all caches, unregister SW, then reload)
+    document.getElementById('btn-reload').addEventListener('click', async () => {
+      // Clear all caches
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map(name => caches.delete(name)));
+      // Unregister all service workers
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+      // Clear localStorage (except lang preference)
+      const savedLang = localStorage.getItem('lulu-shift-lang');
+      localStorage.clear();
+      if (savedLang) localStorage.setItem('lulu-shift-lang', savedLang);
+      // Reload
+      location.reload(true);
+    });
+
     // Load data from Gist
     await this.loadData();
   },

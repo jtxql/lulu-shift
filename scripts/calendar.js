@@ -56,6 +56,29 @@ const Calendar = {
   EVENING_RATE: 2.5,    // 15:00-23:00
   NIGHT_RATE: 3.2,       // 23:00-07:00
   WEEKEND_RATE: 3.0,     // Fri 24:00 - Sun 24:00
+  // Tax constants (Ontario 2024)
+  CPP_EXEMPTION: 3500,
+  CPP_RATE: 0.0595,
+  CPP_MAX_INCOME: 68500,
+  EI_RATE: 0.0166,
+  EI_MAX_INCOME: 63200,
+  PAY_PERIODS_PER_YEAR: 26,
+  // Federal tax brackets 2024
+  FEDERAL_BRACKETS: [
+    { limit: 55867, rate: 0.15 },
+    { limit: 111733, rate: 0.205 },
+    { limit: 173205, rate: 0.26 },
+    { limit: 246752, rate: 0.29 },
+    { limit: Infinity, rate: 0.33 }
+  ],
+  // Ontario provincial tax brackets 2024
+  ONTARIO_BRACKETS: [
+    { limit: 51782, rate: 0.0505 },
+    { limit: 103564, rate: 0.0915 },
+    { limit: 150000, rate: 0.1116 },
+    { limit: 220000, rate: 0.1216 },
+    { limit: Infinity, rate: 0.1316 }
+  ],
 
   init() {
     this.grid = document.getElementById('calendar-grid');
@@ -69,6 +92,11 @@ const Calendar = {
     this._summaryOverlay = document.getElementById('summary-overlay');
     this._summaryBody = document.getElementById('summary-body');
     this._summaryTitle = document.getElementById('summary-title');
+
+    // Pay stub modal refs
+    this._payStubOverlay = document.getElementById('paystub-overlay');
+    this._payStubBody = document.getElementById('paystub-body');
+    this._payStubTitle = document.getElementById('paystub-title');
 
     // Initialize with Ottawa time
     const ottawa = this._getOttawaDateParts();
@@ -104,6 +132,13 @@ const Calendar = {
     document.getElementById('summary-close').addEventListener('click', () => this._closeSummary());
     this._summaryOverlay.addEventListener('click', (e) => {
       if (e.target === this._summaryOverlay) this._closeSummary();
+    });
+
+    // Pay stub button and modal
+    document.getElementById('btn-paystub').addEventListener('click', () => this._showPayStub());
+    document.getElementById('paystub-close').addEventListener('click', () => this._closePayStub());
+    this._payStubOverlay.addEventListener('click', (e) => {
+      if (e.target === this._payStubOverlay) this._closePayStub();
     });
   },
 
@@ -470,6 +505,215 @@ const Calendar = {
 
   _closeSummary() {
     this._summaryOverlay.classList.remove('active');
+  },
+
+  _closePayStub() {
+    this._payStubOverlay.classList.remove('active');
+  },
+
+  /**
+   * Get schedules for the pay period ending on payDate
+   * Pay period is 14 days: payDate-14 to payDate-1
+   */
+  _getPayPeriodSchedules(payDate) {
+    const periodStart = new Date(payDate);
+    periodStart.setDate(periodStart.getDate() - 14);
+    const periodEnd = new Date(payDate);
+    periodEnd.setDate(periodEnd.getDate() - 1);
+
+    const schedules = [];
+    const current = new Date(periodStart);
+    while (current <= periodEnd) {
+      const dateStr = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
+      const schedule = this.schedules.find(s => s.date === dateStr);
+      if (schedule) {
+        schedules.push(schedule);
+      }
+      current.setDate(current.getDate() + 1);
+    }
+    return { schedules, periodStart, periodEnd };
+  },
+
+  /**
+   * Calculate progressive tax using brackets
+   */
+  _progressiveTax(income, brackets) {
+    let tax = 0;
+    let prevLimit = 0;
+    for (const bracket of brackets) {
+      if (income <= prevLimit) break;
+      const taxableInBracket = Math.min(income, bracket.limit) - prevLimit;
+      tax += taxableInBracket * bracket.rate;
+      prevLimit = bracket.limit;
+    }
+    return tax;
+  },
+
+  /**
+   * Calculate pay period tax details
+   */
+  _calcPayPeriodTax(schedules) {
+    // Count shifts and calculate allowances
+    let dayShiftCount = 0;
+    let nightShiftCount = 0;
+    let eveningAllowance = 0;
+    let nightAllowance = 0;
+    let weekendAllowance = 0;
+
+    for (const schedule of schedules) {
+      if (schedule.type === 'day' || schedule.type === 'night') {
+        if (schedule.type === 'day') dayShiftCount++;
+        else nightShiftCount++;
+
+        const { eveningHrs, nightHrs, weekendHrs } = this._calcShiftAllowance(schedule.date, schedule.type);
+        eveningAllowance += eveningHrs * this.EVENING_RATE;
+        nightAllowance += nightHrs * this.NIGHT_RATE;
+        weekendAllowance += weekendHrs * this.WEEKEND_RATE;
+      }
+    }
+
+    const workHours = (dayShiftCount + nightShiftCount) * this.DAILY_HOURS;
+    const basePay = workHours * this.HOURLY_RATE;
+    const grossPay = basePay + eveningAllowance + nightAllowance + weekendAllowance;
+
+    // Annualize
+    const annualGross = grossPay * this.PAY_PERIODS_PER_YEAR;
+
+    // CPP
+    const cppInsurableIncome = Math.min(annualGross, this.CPP_MAX_INCOME) - this.CPP_EXEMPTION;
+    const annualCpp = Math.max(0, cppInsurableIncome * this.CPP_RATE);
+    const cpp = annualCpp / this.PAY_PERIODS_PER_YEAR;
+
+    // EI
+    const annualEi = Math.min(annualGross, this.EI_MAX_INCOME) * this.EI_RATE;
+    const ei = annualEi / this.PAY_PERIODS_PER_YEAR;
+
+    // Taxable income
+    const taxableIncome = annualGross - annualCpp - annualEi;
+
+    // Federal tax (annual, then per period)
+    const annualFederalTax = this._progressiveTax(taxableIncome, this.FEDERAL_BRACKETS);
+    const federalTax = annualFederalTax / this.PAY_PERIODS_PER_YEAR;
+
+    // Ontario provincial tax
+    const annualProvincialTax = this._progressiveTax(taxableIncome, this.ONTARIO_BRACKETS);
+    const provincialTax = annualProvincialTax / this.PAY_PERIODS_PER_YEAR;
+
+    const totalDeductions = cpp + ei + federalTax + provincialTax;
+    const netPay = grossPay - totalDeductions;
+
+    return {
+      dayShiftCount,
+      nightShiftCount,
+      workHours,
+      basePay,
+      eveningAllowance,
+      nightAllowance,
+      weekendAllowance,
+      grossPay,
+      cpp,
+      ei,
+      federalTax,
+      provincialTax,
+      totalDeductions,
+      netPay
+    };
+  },
+
+  _showPayStub() {
+    const { payDate } = this._getNextPayDay();
+    const { schedules, periodStart, periodEnd } = this._getPayPeriodSchedules(payDate);
+    const t = this._calcPayPeriodTax(schedules);
+
+    // Format dates
+    const startStr = `${periodStart.getMonth() + 1}/${periodStart.getDate()}`;
+    const endStr = `${periodEnd.getMonth() + 1}/${periodEnd.getDate()}`;
+    const payDateStr = `${payDate.getMonth() + 1}/${payDate.getDate()}`;
+
+    const fmt = (n) => '$' + n.toFixed(2);
+    const fmtDate = Language.currentLang === 'zh'
+      ? `${periodStart.getMonth() + 1}月${periodStart.getDate()}日 - ${periodEnd.getMonth() + 1}月${periodEnd.getDate()}日`
+      : `${startStr} - ${endStr}`;
+
+    const totalShifts = t.dayShiftCount + t.nightShiftCount;
+    const dayBasePay = totalShifts > 0 ? t.basePay * t.dayShiftCount / totalShifts : 0;
+    const nightBasePay = totalShifts > 0 ? t.basePay * t.nightShiftCount / totalShifts : 0;
+
+    const html = `
+      <div class="paystub-section">
+        <div class="paystub-row header">
+          <span>${Language.t('payStub.payPeriod')}</span>
+          <span>${fmtDate}</span>
+        </div>
+        <div class="paystub-row">
+          <span>${Language.t('payStub.payDate')}</span>
+          <span>${payDateStr}</span>
+        </div>
+      </div>
+
+      <div class="paystub-section">
+        <div class="paystub-section-title">${Language.t('payStub.income')}</div>
+        <div class="paystub-row">
+          <span>${Language.t('payStub.dayShiftIncome')} (${t.dayShiftCount} × ${this.DAILY_HOURS}h)</span>
+          <span>${fmt(dayBasePay)}</span>
+        </div>
+        <div class="paystub-row">
+          <span>${Language.t('payStub.nightShiftIncome')} (${t.nightShiftCount} × ${this.DAILY_HOURS}h)</span>
+          <span>${fmt(nightBasePay)}</span>
+        </div>
+        <div class="paystub-row">
+          <span>${Language.t('payStub.eveningPremium')}</span>
+          <span>${fmt(t.eveningAllowance)}</span>
+        </div>
+        <div class="paystub-row">
+          <span>${Language.t('payStub.nightPremium')}</span>
+          <span>${fmt(t.nightAllowance)}</span>
+        </div>
+        <div class="paystub-row">
+          <span>${Language.t('payStub.weekendPremium')}</span>
+          <span>${fmt(t.weekendAllowance)}</span>
+        </div>
+        <div class="paystub-row total">
+          <span>${Language.t('payStub.grossPay')}</span>
+          <span>${fmt(t.grossPay)}</span>
+        </div>
+      </div>
+
+      <div class="paystub-section">
+        <div class="paystub-section-title">${Language.t('payStub.deductions')}</div>
+        <div class="paystub-row deduction">
+          <span>${Language.t('payStub.cpp')}</span>
+          <span>-${fmt(t.cpp)}</span>
+        </div>
+        <div class="paystub-row deduction">
+          <span>${Language.t('payStub.ei')}</span>
+          <span>-${fmt(t.ei)}</span>
+        </div>
+        <div class="paystub-row deduction">
+          <span>${Language.t('payStub.federalTax')}</span>
+          <span>-${fmt(t.federalTax)}</span>
+        </div>
+        <div class="paystub-row deduction">
+          <span>${Language.t('payStub.provincialTax')}</span>
+          <span>-${fmt(t.provincialTax)}</span>
+        </div>
+        <div class="paystub-row total deduction">
+          <span>${Language.t('payStub.totalDeductions')}</span>
+          <span>-${fmt(t.totalDeductions)}</span>
+        </div>
+      </div>
+
+      <div class="paystub-section">
+        <div class="paystub-row grand-total">
+          <span>${Language.t('payStub.netPay')}</span>
+          <span>${fmt(t.netPay)}</span>
+        </div>
+      </div>
+    `;
+
+    this._payStubTitle.textContent = Language.t('payStub.title');
+    this._payStubBody.innerHTML = html;
+    this._payStubOverlay.classList.add('active');
   },
 
   prevMonth() {

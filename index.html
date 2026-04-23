@@ -85,11 +85,19 @@
 
   <!-- Status Bar -->
   <div class="status-bar" id="status-bar">
-    <div class="status-time" id="status-time"></div>
+    <!-- Row 1: Ottawa time + payday + paystub btn + version -->
+    <div class="status-time-row">
+      <span id="status-time"></span>
+      <span class="status-payday" id="status-payday"></span>
+      <button class="icon-btn status-btn-paystub" id="btn-paystub" title="Pay Stub">
+        <i data-lucide="banknote"></i>
+      </button>
+      <span class="status-version" id="status-version"></span>
+    </div>
+    <!-- Row 2: Shift status -->
     <div class="status-shift" id="status-shift"></div>
-    <div class="status-payday" id="status-payday"></div>
+    <!-- Row 3: Weather -->
     <div class="status-weather" id="status-weather"></div>
-    <div class="status-version" id="status-version"></div>
   </div>
 
   <!-- Status Modal -->
@@ -152,6 +160,19 @@
         </button>
       </div>
       <div class="modal-body" id="summary-body"></div>
+    </div>
+  </div>
+
+  <!-- Pay Stub Modal -->
+  <div class="modal-overlay" id="paystub-overlay">
+    <div class="modal" id="paystub-modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="paystub-title">Pay Stub</h3>
+        <button class="modal-close" id="paystub-close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="paystub-body"></div>
     </div>
   </div>
 

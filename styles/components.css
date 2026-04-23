@@ -210,22 +210,51 @@
   right: 0;
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
   text-align: center;
   z-index: 50;
+}
+
+.status-bar > * {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.status-bar > *:last-child {
+  margin-bottom: 0;
 }
 
 .status-time {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-xs);
+}
+
+.status-time-row,
+.status-payday-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.status-payday-row {
+  font-size: 0.75rem;
+}
+
+.status-version {
+  font-size: 0.625rem;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
 }
 
 .status-shift {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text);
-  margin-bottom: var(--space-xs);
+  margin-bottom: 4px;
 }
 
 .status-shift.working {
@@ -240,6 +269,83 @@
 .status-version {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
+}
+
+.status-btn-paystub {
+  padding: 4px 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s;
+}
+
+.status-btn-paystub:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.status-btn-paystub svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===== Pay Stub Modal ===== */
+.paystub-section {
+  margin-bottom: var(--space-lg);
+}
+
+.paystub-section:last-child {
+  margin-bottom: 0;
+}
+
+.paystub-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.paystub-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) 0;
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+.paystub-row.header {
+  font-weight: 600;
+  font-size: 1rem;
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.paystub-row.deduction {
+  color: var(--color-text-secondary);
+}
+
+.paystub-row.total {
+  font-weight: 600;
+  padding-top: var(--space-sm);
+  margin-top: var(--space-xs);
+  border-top: 1px solid var(--color-border);
+}
+
+.paystub-row.grand-total {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  padding-top: var(--space-md);
+  margin-top: var(--space-sm);
+  border-top: 2px solid var(--color-primary);
 }
 
 /* ===== Weather Display ===== */

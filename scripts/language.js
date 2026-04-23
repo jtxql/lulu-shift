@@ -56,6 +56,26 @@ const Language = {
         allowanceNote: 'Premiums calculated separately',
         noWork: 'No work shifts in selected period'
       },
+      payStub: {
+        title: 'Pay Stub',
+        payPeriod: 'Pay Period',
+        income: 'Income',
+        dayShiftIncome: 'Day Shifts',
+        nightShiftIncome: 'Night Shifts',
+        eveningPremium: 'Evening Premium',
+        nightPremium: 'Night Premium',
+        weekendPremium: 'Weekend Premium',
+        grossPay: 'Gross Pay',
+        deductions: 'Deductions',
+        cpp: 'CPP',
+        ei: 'EI',
+        federalTax: 'Federal Tax',
+        provincialTax: 'Provincial Tax',
+        totalDeductions: 'Total Deductions',
+        netPay: 'Net Pay',
+        payDate: 'Pay Date',
+        biweekly: 'Bi-weekly'
+      },
       ottawaTime: 'Ottawa time: {m}/{d}({w}) {h}:{i}'
     },
     zh: {
@@ -107,6 +127,26 @@ const Language = {
         totalPayWithAllowance: '工资合计(含津贴)',
         allowanceNote: '津贴另行计算',
         noWork: '所选时间段内无工作排班'
+      },
+      payStub: {
+        title: '工资条',
+        payPeriod: '发薪周期',
+        income: '收入',
+        dayShiftIncome: '白班',
+        nightShiftIncome: '夜班',
+        eveningPremium: '晚班津贴',
+        nightPremium: '夜班津贴',
+        weekendPremium: '周末津贴',
+        grossPay: '税前总工资',
+        deductions: '扣除',
+        cpp: 'CPP退休金',
+        ei: 'EI就业保险',
+        federalTax: '联邦税',
+        provincialTax: '省税',
+        totalDeductions: '扣除合计',
+        netPay: '实际到账',
+        payDate: '发薪日',
+        biweekly: '每双周'
       },
       ottawaTime: '渥太华时间 {m}月{d}日({w}) {h}:{i}'
     }

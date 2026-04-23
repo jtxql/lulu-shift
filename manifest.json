@@ -2,7 +2,7 @@
   "name": "Monthly Schedule",
   "short_name": "Schedule",
   "description": "A beautiful mobile-friendly monthly schedule PWA app",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

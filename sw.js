@@ -1,7 +1,7 @@
 /**
  * Service Worker - Offline Cache Strategy
  */
-const CACHE_NAME = 'lulu-shift-v2';
+const CACHE_NAME = 'lulu-shift-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -16,6 +16,8 @@ const ASSETS_TO_CACHE = [
   './scripts/calendar.js',
   './scripts/export.js',
   './scripts/app.js',
+  './scripts/language.js',
+  './scripts/weather.js',
   './assets/icons/icon-192.svg'
 ];
 

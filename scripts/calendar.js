@@ -80,17 +80,55 @@ const Calendar = {
     { limit: Infinity, rate: 0.1316 }
   ],
 
-  // Canadian federal + Ontario statutory holidays for 2026
+  // Canadian federal + Ontario statutory holidays
   _getHolidays(year) {
     // Helper: get Nth weekday of a month (e.g. 3rd Monday of February)
+    // weekday: 0=Sun, 1=Mon, ... 6=Sat; n=1:first, n=2:second, n=-1:last
     const nthWeekday = (y, month, weekday, n) => {
-      // weekday: 0=Sun, 1=Mon, ... 6=Sat
       const firstDay = new Date(y, month, 1).getDay();
       let diff = weekday - firstDay;
       if (diff < 0) diff += 7;
       const firstOccurrence = 1 + diff;
+      if (n === -1) {
+        // Last occurrence of weekday in month
+        const daysInMonth = new Date(y, month + 1, 0).getDate();
+        const lastOccurrence = firstOccurrence + Math.floor((daysInMonth - firstOccurrence) / 7) * 7;
+        return lastOccurrence;
+      }
       return firstOccurrence + (n - 1) * 7;
     };
+
+    // Calculate Easter Sunday (Anonymous Gregorian algorithm)
+    const getEasterSunday = (y) => {
+      const a = y % 19;
+      const b = Math.floor(y / 100);
+      const c = y % 100;
+      const d = Math.floor(b / 4);
+      const e = b % 4;
+      const f = Math.floor((b + 8) / 25);
+      const g = Math.floor((b - f + 1) / 3);
+      const h = (19 * a + b - d - g + 15) % 30;
+      const i = Math.floor(c / 4);
+      const k = c % 4;
+      const l = (32 + 2 * e + 2 * i - h - k) % 7;
+      const m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const month = Math.floor((h + l - 7 * m + 114) / 31);
+      const day = ((h + l - 7 * m + 114) % 31) + 1;
+      return new Date(y, month - 1, day);
+    };
+
+    // Good Friday is 2 days before Easter Sunday
+    const easterSunday = getEasterSunday(year);
+    const goodFriday = new Date(easterSunday);
+    goodFriday.setDate(goodFriday.getDate() - 2);
+
+    // Victoria Day: Monday before May 25
+    const victoriaDay = (() => {
+      const may25 = new Date(year, 4, 25); // month 4 = May (0-indexed)
+      const dow = may25.getDay(); // 0=Sun ... 6=Sat
+      const diff = dow === 0 ? -6 : -(dow - 1);
+      return new Date(year, 4, 25 + diff);
+    })();
 
     const holidays = [
       // Fixed holidays
@@ -98,13 +136,13 @@ const Calendar = {
       { month: 6, day: 1, nameEn: "Canada Day", nameZh: "加拿大日" },
       { month: 11, day: 25, nameEn: "Christmas Day", nameZh: "圣诞节" },
       { month: 11, day: 26, nameEn: "Boxing Day", nameZh: "节礼日" },
-      // Variable holidays - calculated for 2026
-      { month: 1, day: 16, nameEn: "Family Day", nameZh: "家庭日" },           // 3rd Monday Feb
-      { month: 2, day: 3, nameEn: "Good Friday", nameZh: "耶秽周五" },          // April 3, 2026
-      { month: 4, day: 18, nameEn: "Victoria Day", nameZh: "维多利亚日" },         // Monday before May 25
-      { month: 7, day: 3, nameEn: "Civic Holiday", nameZh: "公民假日" },           // 1st Monday Aug
-      { month: 8, day: 7, nameEn: "Labour Day", nameZh: "劳动节" },               // 1st Monday Sep
-      { month: 9, day: 12, nameEn: "Thanksgiving", nameZh: "感恩节" },             // 2nd Monday Oct
+      // Variable holidays - calculated dynamically
+      { month: 1, day: nthWeekday(year, 1, 1, 3), nameEn: "Family Day", nameZh: "家庭日" },      // 3rd Monday Feb
+      { month: goodFriday.getMonth(), day: goodFriday.getDate(), nameEn: "Good Friday", nameZh: "耶秽周五" },
+      { month: victoriaDay.getMonth(), day: victoriaDay.getDate(), nameEn: "Victoria Day", nameZh: "维多利亚日" },
+      { month: 7, day: nthWeekday(year, 7, 1, 1), nameEn: "Civic Holiday", nameZh: "公民假日" },    // 1st Monday Aug
+      { month: 8, day: nthWeekday(year, 8, 1, 1), nameEn: "Labour Day", nameZh: "劳动节" },       // 1st Monday Sep
+      { month: 9, day: nthWeekday(year, 9, 1, 2), nameEn: "Thanksgiving", nameZh: "感恩节" },      // 2nd Monday Oct
     ];
 
     return holidays.map(h => ({
@@ -115,10 +153,10 @@ const Calendar = {
   },
 
   _isHoliday(dateStr) {
-    const year = this.currentYear;
-    if (!this._holidays || this._holidaysYear !== year) {
-      this._holidays = this._getHolidays(year);
-      this._holidaysYear = year;
+    const holidayYear = parseInt(dateStr.split('-')[0], 10);
+    if (!this._holidays || this._holidaysYear !== holidayYear) {
+      this._holidays = this._getHolidays(holidayYear);
+      this._holidaysYear = holidayYear;
     }
     return this._holidays.find(h => h.date === dateStr) || null;
   },

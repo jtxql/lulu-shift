@@ -35,6 +35,7 @@ This is a **PWA monthly work schedule calendar** for a rotating shift worker. Th
 | `dark-mode.js` | Dark mode toggle with localStorage persistence |
 | `export.js` | Print functionality via `window.print()` |
 | `pwa.js` | Service worker registration |
+| `sw.js` | Service worker with cache-first strategy for offline |
 
 ### Data Flow
 1. `App.init()` loads data via `Gist.load()` (reads from GitHub Gist)
@@ -52,7 +53,12 @@ This is a **PWA monthly work schedule calendar** for a rotating shift worker. Th
 }
 ```
 
-**Shift types**: `day`, `night`, `rest`, `personal`, `sick`, `annual`
+**Shift types**: `day`, `night`, `rest`, `personal`, `sick`, `annual`, `holiday`
+
+### Canadian Holidays
+- `_getHolidays(year)` in `calendar.js` returns federal + Ontario statutory holidays with English/Chinese names
+- Holidays marked with red dot (`.day-cell.holiday::after` pseudo-element)
+- `holiday` shift type is read-only (not selectable via modal), shown for reference only
 
 ### Pay Calculation (in `calendar.js`)
 - Day shift: 07:30–19:15, Night shift: 19:30–07:15 next day
@@ -73,6 +79,8 @@ This is a **PWA monthly work schedule calendar** for a rotating shift worker. Th
 - Service Worker uses cache-first strategy for local assets
 - GitHub API and CDN requests bypass cache
 - Offline fallback returns `index.html`
+- **Cache versioning**: When deploying new features, bump `CACHE_NAME` in `sw.js` to force cache refresh. Users may need Ctrl+Shift+R to clear old cache.
+- Version displayed in header-right (blue text, `var(--color-primary)`)
 
 ### CSS Organization
 - `main.css` — base styles, variables
@@ -81,10 +89,11 @@ This is a **PWA monthly work schedule calendar** for a rotating shift worker. Th
 - `dark.css` — dark mode overrides
 
 ### UI Structure
-- Header with export, language toggle, dark mode buttons
+- Header: app title (left), version number (blue, right of title), icon buttons (right)
 - Month navigation (prev/next arrows, month title)
 - Weekday headers (Mon–Sun)
 - Calendar grid (6 rows × 7 cols, 42 cells)
-- Status bar: current time, shift status, next pay day, weather for 3 cities
+- Status bar (fixed bottom): Ottawa time + version | payday + paystub button | shift status | weather
 - Status modal: shift type selection
 - Summary modal: pay breakdown for selected date range
+- Pay stub modal: detailed pay with CPP/EI/tax deductions

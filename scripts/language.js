@@ -18,7 +18,8 @@ const Language = {
         rest: 'Day Off',
         personal: 'Personal Leave',
         sick: 'Sick Leave',
-        annual: 'Annual Leave'
+        annual: 'Annual Leave',
+        holiday: 'Holiday'
       },
       status: {
         noSchedule: 'No schedule record for today',
@@ -90,7 +91,8 @@ const Language = {
         rest: '休息',
         personal: '事假',
         sick: '病假',
-        annual: '年假'
+        annual: '年假',
+        holiday: '法定假日'
       },
       status: {
         noSchedule: '今日无排班记录',
@@ -208,10 +210,11 @@ const Language = {
 
     // Update legend
     const legendItems = document.querySelectorAll('.legend-item');
-    const legendKeys = ['day', 'night', 'rest', 'personal', 'sick', 'annual'];
+    const legendKeys = ['day', 'night', 'rest', 'personal', 'sick', 'annual', 'holiday'];
     legendItems.forEach((el, i) => {
-      const label = el.textContent.replace(/^[A-Z]\s*/, ''); // Remove existing label
-      el.innerHTML = `<span class="legend-dot" style="background: var(--color-${legendKeys[i] === 'day' ? 'day' : legendKeys[i]})"></span>${this.t('legend.' + legendKeys[i])}`;
+      const key = legendKeys[i];
+      const color = key === 'holiday' ? '#dc2626' : `var(--color-${key === 'day' ? 'day' : key})`;
+      el.innerHTML = `<span class="legend-dot" style="background: ${color}"></span>${this.t('legend.' + key)}`;
     });
 
     // Update modal buttons

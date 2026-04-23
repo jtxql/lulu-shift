@@ -80,6 +80,49 @@ const Calendar = {
     { limit: Infinity, rate: 0.1316 }
   ],
 
+  // Canadian federal + Ontario statutory holidays for 2026
+  _getHolidays(year) {
+    // Helper: get Nth weekday of a month (e.g. 3rd Monday of February)
+    const nthWeekday = (y, month, weekday, n) => {
+      // weekday: 0=Sun, 1=Mon, ... 6=Sat
+      const firstDay = new Date(y, month, 1).getDay();
+      let diff = weekday - firstDay;
+      if (diff < 0) diff += 7;
+      const firstOccurrence = 1 + diff;
+      return firstOccurrence + (n - 1) * 7;
+    };
+
+    const holidays = [
+      // Fixed holidays
+      { month: 0, day: 1, nameEn: "New Year's Day", nameZh: "元旦" },
+      { month: 6, day: 1, nameEn: "Canada Day", nameZh: "加拿大日" },
+      { month: 11, day: 25, nameEn: "Christmas Day", nameZh: "圣诞节" },
+      { month: 11, day: 26, nameEn: "Boxing Day", nameZh: "节礼日" },
+      // Variable holidays - calculated for 2026
+      { month: 1, day: 16, nameEn: "Family Day", nameZh: "家庭日" },           // 3rd Monday Feb
+      { month: 2, day: 3, nameEn: "Good Friday", nameZh: "耶秽周五" },          // April 3, 2026
+      { month: 4, day: 18, nameEn: "Victoria Day", nameZh: "维多利亚日" },         // Monday before May 25
+      { month: 7, day: 3, nameEn: "Civic Holiday", nameZh: "公民假日" },           // 1st Monday Aug
+      { month: 8, day: 7, nameEn: "Labour Day", nameZh: "劳动节" },               // 1st Monday Sep
+      { month: 9, day: 12, nameEn: "Thanksgiving", nameZh: "感恩节" },             // 2nd Monday Oct
+    ];
+
+    return holidays.map(h => ({
+      date: `${year}-${String(h.month + 1).padStart(2, '0')}-${String(h.day).padStart(2, '0')}`,
+      nameEn: h.nameEn,
+      nameZh: h.nameZh
+    }));
+  },
+
+  _isHoliday(dateStr) {
+    const year = this.currentYear;
+    if (!this._holidays || this._holidaysYear !== year) {
+      this._holidays = this._getHolidays(year);
+      this._holidaysYear = year;
+    }
+    return this._holidays.find(h => h.date === dateStr) || null;
+  },
+
   init() {
     this.grid = document.getElementById('calendar-grid');
     this.titleEl = document.getElementById('month-title');
@@ -1048,6 +1091,14 @@ const Calendar = {
     }
 
     cell.dataset.date = dateStr;
+
+    // Check if holiday
+    const holiday = this._isHoliday(dateStr);
+    if (holiday) {
+      cell.classList.add('holiday');
+      cell.dataset.holidayEn = holiday.nameEn;
+      cell.dataset.holidayZh = holiday.nameZh;
+    }
 
     if (schedule) {
       cell.classList.add('has-status', schedule.type);

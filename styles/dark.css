@@ -111,6 +111,10 @@ body.dark-mode .day-cell.annual {
   background: rgba(16, 185, 129, 0.25);
 }
 
+body.dark-mode .day-cell.holiday::after {
+  background: #f87171;
+}
+
 /* ===== Legend ===== */
 body.dark-mode .legend {
   border-top-color: var(--color-border);

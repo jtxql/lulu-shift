@@ -85,14 +85,17 @@
 
   <!-- Status Bar -->
   <div class="status-bar" id="status-bar">
-    <!-- Row 1: Ottawa time + payday + paystub btn + version -->
+    <!-- Row 1a: Ottawa time + version -->
     <div class="status-time-row">
       <span id="status-time"></span>
-      <span class="status-payday" id="status-payday"></span>
-      <button class="icon-btn status-btn-paystub" id="btn-paystub" title="Pay Stub">
-        <i data-lucide="banknote"></i>
-      </button>
       <span class="status-version" id="status-version"></span>
+    </div>
+    <!-- Row 1b: Payday + paystub button -->
+    <div class="status-payday-row">
+      <span id="status-payday"></span>
+      <button class="icon-btn status-btn-paystub" id="btn-paystub" title="Pay Stub">
+        <i data-lucide="file-text"></i>
+      </button>
     </div>
     <!-- Row 2: Shift status -->
     <div class="status-shift" id="status-shift"></div>

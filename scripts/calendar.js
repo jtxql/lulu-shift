@@ -810,7 +810,7 @@ const Calendar = {
     timeEl.textContent = Language.formatTime(hours, minutes);
 
     // Display version from manifest
-    const versionEl = document.getElementById('status-version');
+    const versionEl = document.getElementById('header-version');
     if (versionEl && !versionEl.textContent) {
       fetch('manifest.json?t=' + Date.now())
         .then(r => r.json())

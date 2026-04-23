@@ -72,7 +72,17 @@ body {
 
 .header-right {
   display: flex;
+  align-items: center;
   gap: var(--space-sm);
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.header-version {
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-right: var(--space-sm);
 }
 
 /* ===== Icon Button ===== */

@@ -212,6 +212,7 @@ const Language = {
     const legendItems = document.querySelectorAll('.legend-item');
     const legendKeys = ['day', 'night', 'rest', 'personal', 'sick', 'annual', 'holiday'];
     legendItems.forEach((el, i) => {
+      if (i >= legendKeys.length) return;
       const key = legendKeys[i];
       const color = key === 'holiday' ? '#dc2626' : `var(--color-${key === 'day' ? 'day' : key})`;
       el.innerHTML = `<span class="legend-dot" style="background: ${color}"></span>${this.t('legend.' + key)}`;

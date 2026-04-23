@@ -28,6 +28,10 @@ body.dark-mode .app-title {
   color: var(--color-primary);
 }
 
+body.dark-mode .header-version {
+  color: var(--color-primary);
+}
+
 body.dark-mode .icon-btn {
   background: var(--color-surface);
   color: var(--color-text);

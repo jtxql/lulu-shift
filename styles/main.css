@@ -277,7 +277,7 @@ body {
 .marker-row {
   display: flex;
   gap: 3px;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .marker-charge {

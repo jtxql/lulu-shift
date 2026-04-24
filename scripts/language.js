@@ -7,7 +7,7 @@ const Language = {
 
   translations: {
     en: {
-      appTitle: "LULU的排班表",
+      appTitle: "LULU's Schedule",
       printExport: 'Print / Export',
       darkMode: 'Dark Mode',
       monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -86,7 +86,7 @@ const Language = {
       ottawaTime: 'Ottawa time: {m}/{d}({w}) {h}:{i}'
     },
     zh: {
-      appTitle: 'LULU的月度排班表',
+      appTitle: 'LULU的排班表',
       printExport: '打印/导出',
       darkMode: '深色模式',
       monthNames: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],

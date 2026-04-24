@@ -119,6 +119,15 @@ body.dark-mode .day-cell.holiday::after {
   background: #f87171;
 }
 
+/* ===== Charge/Preceptor Markers ===== */
+body.dark-mode .marker-charge {
+  background: #fbbf24;
+}
+
+body.dark-mode .marker-preceptor {
+  background: #4ade80;
+}
+
 /* ===== Legend ===== */
 body.dark-mode .legend {
   border-top-color: var(--color-border);

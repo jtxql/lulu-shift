@@ -1142,6 +1142,11 @@ const Calendar = {
       const dateStr = `${prevYear}-${String(prevMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const schedule = this.schedules.find(s => s.date === dateStr);
       const cell = this.createDayCell(day, dateStr, schedule, true);
+      // Charge/preceptor dot markers
+      if (schedule && (schedule.type === 'day' || schedule.type === 'night')) {
+        if (schedule.chargeNurse) cell.classList.add('has-charge');
+        if (schedule.preceptorNurse) cell.classList.add('has-preceptor');
+      }
       this.grid.appendChild(cell);
     }
 
@@ -1164,6 +1169,12 @@ const Calendar = {
         cell.classList.add('today');
       }
 
+      // Charge/preceptor dot markers
+      if (schedule && (schedule.type === 'day' || schedule.type === 'night')) {
+        if (schedule.chargeNurse) cell.classList.add('has-charge');
+        if (schedule.preceptorNurse) cell.classList.add('has-preceptor');
+      }
+
       this.grid.appendChild(cell);
     }
 
@@ -1177,6 +1188,11 @@ const Calendar = {
       const dateStr = `${nextYear}-${String(nextMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const schedule = this.schedules.find(s => s.date === dateStr);
       const cell = this.createDayCell(day, dateStr, schedule, true);
+      // Charge/preceptor dot markers
+      if (schedule && (schedule.type === 'day' || schedule.type === 'night')) {
+        if (schedule.chargeNurse) cell.classList.add('has-charge');
+        if (schedule.preceptorNurse) cell.classList.add('has-preceptor');
+      }
       this.grid.appendChild(cell);
     }
   },
@@ -1202,9 +1218,12 @@ const Calendar = {
     if (schedule) {
       cell.classList.add('has-status', schedule.type);
       const statusLabel = schedule.type === 'day' ? 'D' : schedule.type === 'night' ? 'N' : '';
+      const chargeDot = schedule.chargeNurse ? '<span class="marker-charge"></span>' : '';
+      const preceptorDot = schedule.preceptorNurse ? '<span class="marker-preceptor"></span>' : '';
       cell.innerHTML = `
         <span class="day-number">${day}</span>
         <span class="day-status ${schedule.type}">${statusLabel}</span>
+        <span class="marker-row">${chargeDot}${preceptorDot}</span>
       `;
     } else {
       cell.innerHTML = `<span class="day-number">${day}</span>`;

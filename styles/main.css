@@ -273,6 +273,29 @@ body {
   z-index: 2;
 }
 
+/* ===== Charge/Preceptor Marker Dots ===== */
+.marker-row {
+  display: flex;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.marker-charge {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #eab308;
+  flex-shrink: 0;
+}
+
+.marker-preceptor {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+}
+
 .day-number {
   font-size: 1rem;
   font-weight: 600;

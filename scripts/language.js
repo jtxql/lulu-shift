@@ -7,7 +7,7 @@ const Language = {
 
   translations: {
     en: {
-      appTitle: "LULU's Monthly Schedule",
+      appTitle: "LULU的排班表",
       printExport: 'Print / Export',
       darkMode: 'Dark Mode',
       monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],

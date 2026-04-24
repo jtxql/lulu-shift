@@ -56,6 +56,11 @@ const Calendar = {
   EVENING_RATE: 2.5,    // 15:00-23:00
   NIGHT_RATE: 3.2,       // 23:00-07:00
   WEEKEND_RATE: 3.0,     // Fri 24:00 - Sun 24:00
+  // Charge/Preceptor allowance rates (CAD/hour)
+  PRECEPTOR_RATE: 2.0,  // $2/hr for preceptor, 11.25h per shift
+  CHARGE_RATE: 4.0,      // $4/hr for charge nurse
+  CHARGE_DAY_HOURS: 3.25, // charge allowance hours for day shift
+  CHARGE_NIGHT_HOURS: 11.25, // charge allowance hours for night shift
   // Tax constants (Ontario 2024)
   CPP_EXEMPTION: 3500,
   CPP_RATE: 0.0595,
@@ -397,6 +402,8 @@ const Calendar = {
     let eveningAllowance = 0;
     let nightAllowance = 0;
     let weekendAllowance = 0;
+    let chargeAllowance = 0;
+    let preceptorAllowance = 0;
 
     sortedDates.forEach(dateStr => {
       const schedule = this.schedules.find(s => s.date === dateStr);
@@ -409,12 +416,23 @@ const Calendar = {
         eveningAllowance += eveningHrs * this.EVENING_RATE;
         nightAllowance += nightHrs * this.NIGHT_RATE;
         weekendAllowance += weekendHrs * this.WEEKEND_RATE;
+
+        // Charge nurse allowance
+        if (schedule.chargeNurse) {
+          const chargeHrs = schedule.type === 'day' ? this.CHARGE_DAY_HOURS : this.CHARGE_NIGHT_HOURS;
+          chargeAllowance += chargeHrs * this.CHARGE_RATE;
+        }
+
+        // Preceptor nurse allowance (all shifts 11.25h)
+        if (schedule.preceptorNurse) {
+          preceptorAllowance += this.DAILY_HOURS * this.PRECEPTOR_RATE;
+        }
       }
     });
 
     const totalWorkHours = (dayShiftCount + nightShiftCount) * this.DAILY_HOURS;
     const basePay = totalWorkHours * this.HOURLY_RATE;
-    const totalAllowance = eveningAllowance + nightAllowance + weekendAllowance;
+    const totalAllowance = eveningAllowance + nightAllowance + weekendAllowance + chargeAllowance + preceptorAllowance;
     const totalPay = basePay + totalAllowance;
 
     // Format date range display
@@ -476,6 +494,19 @@ const Calendar = {
           <div class="summary-row">
             <span class="summary-label">${Language.t('summary.weekendAllowance')}</span>
             <span class="summary-value">$${weekendAllowance.toFixed(2)} CAD</span>
+          </div>
+        `;
+      }
+
+      if (chargeAllowance > 0 || preceptorAllowance > 0) {
+        html += `
+          <div class="summary-row">
+            <span class="summary-label">${Language.t('summary.chargeAllowance')}</span>
+            <span class="summary-value">$${chargeAllowance.toFixed(2)} CAD</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">${Language.t('summary.preceptorAllowance')}</span>
+            <span class="summary-value">$${preceptorAllowance.toFixed(2)} CAD</span>
           </div>
         `;
       }
@@ -643,6 +674,8 @@ const Calendar = {
     let eveningAllowance = 0;
     let nightAllowance = 0;
     let weekendAllowance = 0;
+    let chargeAllowance = 0;
+    let preceptorAllowance = 0;
 
     for (const schedule of schedules) {
       if (schedule.type === 'day' || schedule.type === 'night') {
@@ -653,12 +686,23 @@ const Calendar = {
         eveningAllowance += eveningHrs * this.EVENING_RATE;
         nightAllowance += nightHrs * this.NIGHT_RATE;
         weekendAllowance += weekendHrs * this.WEEKEND_RATE;
+
+        // Charge nurse allowance
+        if (schedule.chargeNurse) {
+          const chargeHrs = schedule.type === 'day' ? this.CHARGE_DAY_HOURS : this.CHARGE_NIGHT_HOURS;
+          chargeAllowance += chargeHrs * this.CHARGE_RATE;
+        }
+
+        // Preceptor nurse allowance (all shifts 11.25h)
+        if (schedule.preceptorNurse) {
+          preceptorAllowance += this.DAILY_HOURS * this.PRECEPTOR_RATE;
+        }
       }
     }
 
     const workHours = (dayShiftCount + nightShiftCount) * this.DAILY_HOURS;
     const basePay = workHours * this.HOURLY_RATE;
-    const grossPay = basePay + eveningAllowance + nightAllowance + weekendAllowance;
+    const grossPay = basePay + eveningAllowance + nightAllowance + weekendAllowance + chargeAllowance + preceptorAllowance;
 
     // Annualize
     const annualGross = grossPay * this.PAY_PERIODS_PER_YEAR;
@@ -694,6 +738,8 @@ const Calendar = {
       eveningAllowance,
       nightAllowance,
       weekendAllowance,
+      chargeAllowance,
+      preceptorAllowance,
       grossPay,
       cpp,
       ei,
@@ -757,6 +803,18 @@ const Calendar = {
           <span>${Language.t('payStub.weekendPremium')}</span>
           <span>${fmt(t.weekendAllowance)}</span>
         </div>
+        ${t.chargeAllowance > 0 ? `
+        <div class="paystub-row">
+          <span>${Language.t('payStub.chargePremium')}</span>
+          <span>${fmt(t.chargeAllowance)}</span>
+        </div>
+        ` : ''}
+        ${t.preceptorAllowance > 0 ? `
+        <div class="paystub-row">
+          <span>${Language.t('payStub.preceptorPremium')}</span>
+          <span>${fmt(t.preceptorAllowance)}</span>
+        </div>
+        ` : ''}
         <div class="paystub-row total">
           <span>${Language.t('payStub.grossPay')}</span>
           <span>${fmt(t.grossPay)}</span>

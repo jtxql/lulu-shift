@@ -13,7 +13,7 @@ const PWA = {
 
   async registerServiceWorker() {
     try {
-      const registration = await navigator.serviceWorker.register('./sw.js');
+      const registration = await navigator.serviceWorker.register('./sw.js?t=' + Date.now());
       console.log('SW registered:', registration.scope);
     } catch (error) {
       console.log('SW registration failed:', error);

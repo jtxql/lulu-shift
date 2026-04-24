@@ -1,7 +1,7 @@
 /**
  * Service Worker - Offline Cache Strategy
  */
-const CACHE_NAME = 'lulu-shift-v5';
+const CACHE_NAME = 'lulu-shift-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

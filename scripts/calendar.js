@@ -168,6 +168,9 @@ const Calendar = {
     this.overlay = document.getElementById('modal-overlay');
     this.modalDate = document.getElementById('modal-date');
     this.statusOptions = document.getElementById('status-options');
+    this.shiftExtras = document.getElementById('shift-extras');
+    this.cbCharge = document.getElementById('cb-charge');
+    this.cbPreceptor = document.getElementById('cb-preceptor');
 
     // Summary modal refs
     this._summaryOverlay = document.getElementById('summary-overlay');
@@ -1169,6 +1172,19 @@ const Calendar = {
     this.selectedStatus = schedule ? schedule.type : null;
     this.updateStatusSelection();
 
+    // Show/hide charge/preceptor checkboxes (only for day/night shifts)
+    const showExtras = this.selectedStatus === 'day' || this.selectedStatus === 'night';
+    this.shiftExtras.style.display = showExtras ? 'flex' : 'none';
+
+    // Restore checkbox state from schedule
+    if (schedule) {
+      this.cbCharge.checked = schedule.chargeNurse || false;
+      this.cbPreceptor.checked = schedule.preceptorNurse || false;
+    } else {
+      this.cbCharge.checked = false;
+      this.cbPreceptor.checked = false;
+    }
+
     // Show modal
     this.overlay.classList.add('active');
   },
@@ -1189,6 +1205,10 @@ const Calendar = {
     buttons.forEach(btn => {
       btn.classList.toggle('selected', btn.dataset.status === this.selectedStatus);
     });
+
+    // Show/hide charge/preceptor checkboxes (only for day/night shifts)
+    const showExtras = this.selectedStatus === 'day' || this.selectedStatus === 'night';
+    this.shiftExtras.style.display = showExtras ? 'flex' : 'none';
   },
 
   async saveStatus() {
@@ -1209,12 +1229,20 @@ const Calendar = {
     // Remove existing schedule for this date
     this.schedules = this.schedules.filter(s => s.date !== this.selectedDate);
 
-    // Add new schedule
-    this.schedules.push({
+    // Build schedule object
+    const scheduleObj = {
       date: this.selectedDate,
       type: this.selectedStatus,
       text: statusText[this.selectedStatus]
-    });
+    };
+
+    // Add charge/preceptor flags only for day/night shifts
+    if (this.selectedStatus === 'day' || this.selectedStatus === 'night') {
+      scheduleObj.chargeNurse = this.cbCharge.checked;
+      scheduleObj.preceptorNurse = this.cbPreceptor.checked;
+    }
+
+    this.schedules.push(scheduleObj);
 
     // Save to Gist
     App.showLoading(true);

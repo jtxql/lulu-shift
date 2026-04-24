@@ -36,7 +36,9 @@ const Language = {
       modal: {
         delete: 'Delete',
         save: 'Save',
-        pleaseSelect: 'Please select a shift status'
+        pleaseSelect: 'Please select a shift status',
+        chargeNurse: 'Charge Nurse',
+        preceptorNurse: 'Preceptor Nurse'
       },
       toast: {
         saved: 'Saved successfully',
@@ -109,7 +111,9 @@ const Language = {
       modal: {
         delete: '删除',
         save: '保存',
-        pleaseSelect: '请选择班次状态'
+        pleaseSelect: '请选择班次状态',
+        chargeNurse: '领班护士',
+        preceptorNurse: '带实习生护士'
       },
       toast: {
         saved: '保存成功',
@@ -230,6 +234,10 @@ const Language = {
       const dotColor = span ? span.style.background : '';
       btn.innerHTML = `<span class="status-dot" style="background: ${dotColor}"></span>${this.t('legend.' + statusKeys[i])}`;
     });
+
+    // Update checkbox labels
+    document.getElementById('label-charge').textContent = this.t('modal.chargeNurse');
+    document.getElementById('label-preceptor').textContent = this.t('modal.preceptorNurse');
 
     // Update title (month/year)
     this.updateTitle();

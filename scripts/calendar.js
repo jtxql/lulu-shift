@@ -404,6 +404,7 @@ const Calendar = {
     let weekendAllowance = 0;
     let chargeAllowance = 0;
     let preceptorAllowance = 0;
+    let holidayOvertime = 0;
 
     sortedDates.forEach(dateStr => {
       const schedule = this.schedules.find(s => s.date === dateStr);
@@ -427,12 +428,17 @@ const Calendar = {
         if (schedule.preceptorNurse) {
           preceptorAllowance += this.DAILY_HOURS * this.PRECEPTOR_RATE;
         }
+
+        // Holiday overtime: 1.5x hourly rate on top of normal pay
+        if (this._isHoliday(dateStr)) {
+          holidayOvertime += this.DAILY_HOURS * this.HOURLY_RATE * 1.5;
+        }
       }
     });
 
     const totalWorkHours = (dayShiftCount + nightShiftCount) * this.DAILY_HOURS;
     const basePay = totalWorkHours * this.HOURLY_RATE;
-    const totalAllowance = eveningAllowance + nightAllowance + weekendAllowance + chargeAllowance + preceptorAllowance;
+    const totalAllowance = eveningAllowance + nightAllowance + weekendAllowance + chargeAllowance + preceptorAllowance + holidayOvertime;
     const totalPay = basePay + totalAllowance;
 
     // Format date range display
@@ -507,6 +513,15 @@ const Calendar = {
           <div class="summary-row">
             <span class="summary-label">${Language.t('summary.preceptorAllowance')}</span>
             <span class="summary-value">$${preceptorAllowance.toFixed(2)} CAD</span>
+          </div>
+        `;
+      }
+
+      if (holidayOvertime > 0) {
+        html += `
+          <div class="summary-row">
+            <span class="summary-label">${Language.t('summary.holidayOvertime')}</span>
+            <span class="summary-value">$${holidayOvertime.toFixed(2)} CAD</span>
           </div>
         `;
       }
@@ -676,6 +691,7 @@ const Calendar = {
     let weekendAllowance = 0;
     let chargeAllowance = 0;
     let preceptorAllowance = 0;
+    let holidayOvertime = 0;
 
     for (const schedule of schedules) {
       if (schedule.type === 'day' || schedule.type === 'night') {
@@ -697,12 +713,17 @@ const Calendar = {
         if (schedule.preceptorNurse) {
           preceptorAllowance += this.DAILY_HOURS * this.PRECEPTOR_RATE;
         }
+
+        // Holiday overtime: 1.5x hourly rate on top of normal pay
+        if (this._isHoliday(schedule.date)) {
+          holidayOvertime += this.DAILY_HOURS * this.HOURLY_RATE * 1.5;
+        }
       }
     }
 
     const workHours = (dayShiftCount + nightShiftCount) * this.DAILY_HOURS;
     const basePay = workHours * this.HOURLY_RATE;
-    const grossPay = basePay + eveningAllowance + nightAllowance + weekendAllowance + chargeAllowance + preceptorAllowance;
+    const grossPay = basePay + eveningAllowance + nightAllowance + weekendAllowance + chargeAllowance + preceptorAllowance + holidayOvertime;
 
     // Annualize
     const annualGross = grossPay * this.PAY_PERIODS_PER_YEAR;
@@ -740,6 +761,7 @@ const Calendar = {
       weekendAllowance,
       chargeAllowance,
       preceptorAllowance,
+      holidayOvertime,
       grossPay,
       cpp,
       ei,
@@ -813,6 +835,12 @@ const Calendar = {
         <div class="paystub-row">
           <span>${Language.t('payStub.preceptorPremium')}</span>
           <span>${fmt(t.preceptorAllowance)}</span>
+        </div>
+        ` : ''}
+        ${t.holidayOvertime > 0 ? `
+        <div class="paystub-row">
+          <span>${Language.t('payStub.holidayOvertime')}</span>
+          <span>${fmt(t.holidayOvertime)}</span>
         </div>
         ` : ''}
         <div class="paystub-row total">

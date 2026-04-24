@@ -57,6 +57,7 @@ const Language = {
         weekendAllowance: 'Weekend Premium',
         chargeAllowance: 'Charge Nurse Premium',
         preceptorAllowance: 'Preceptor Premium',
+        holidayOvertime: 'Holiday Overtime (1.5x)',
         totalPayWithAllowance: 'Total (incl. premiums)',
         allowanceNote: 'Premiums calculated separately',
         noWork: 'No work shifts in selected period'
@@ -72,6 +73,7 @@ const Language = {
         weekendPremium: 'Weekend Premium',
         chargePremium: 'Charge Nurse Premium',
         preceptorPremium: 'Preceptor Premium',
+        holidayOvertime: 'Holiday Overtime',
         grossPay: 'Gross Pay',
         deductions: 'Deductions',
         cpp: 'CPP',
@@ -136,6 +138,7 @@ const Language = {
         weekendAllowance: '周末津贴',
         chargeAllowance: '领班护士津贴',
         preceptorAllowance: '带实习生护士津贴',
+        holidayOvertime: '法定假日加班费 (1.5倍)',
         totalPayWithAllowance: '工资合计(含津贴)',
         allowanceNote: '津贴另行计算',
         noWork: '所选时间段内无工作排班'
@@ -151,6 +154,7 @@ const Language = {
         weekendPremium: '周末津贴',
         chargePremium: '领班护士津贴',
         preceptorPremium: '带实习生护士津贴',
+        holidayOvertime: '法定假日加班费',
         grossPay: '税前总工资',
         deductions: '扣除',
         cpp: 'CPP退休金',
